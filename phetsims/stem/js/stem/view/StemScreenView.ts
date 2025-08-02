@@ -39,8 +39,8 @@ export default class StemScreenView extends ScreenView {
       //TODO add default values for optional ScreenViewOptions here
     }, providedOptions );
     super( options );
-    
-    // ================== BACKGROUND SKY AND GROUND ======================
+
+    //=============UI CONSTANT===========================
     const screenLeft = this.layoutBounds.left;
     const screenRight = this.layoutBounds.right;
     const screenTop = this.layoutBounds.top;
@@ -48,10 +48,11 @@ export default class StemScreenView extends ScreenView {
 
     const screenWidth = screenRight - screenLeft;
     const screenHeight = screenBottom - screenTop;
+    //===================================================
 
+    // ================== BACKGROUND SKY AND GROUND ======================
     const skyHeight = screenHeight * 0.8;
     const groundHeight = screenHeight * 0.2;
-
     // Bầu trời (80% chiều cao màn hình)
     const sky = new Rectangle( 0, 0, screenWidth, skyHeight, {
       fill: '#dbf3fa',
@@ -125,6 +126,8 @@ export default class StemScreenView extends ScreenView {
       }
     } );
 
+
+    
     dragCircle.addInputListener( dragListener );
     this.dragCircle = dragCircle;
     this.addChild( dragCircle );
