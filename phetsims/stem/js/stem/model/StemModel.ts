@@ -29,6 +29,7 @@ export default class StemModel implements TModel {
     this.position = 0;
     this.velocity = 0;
     this.groundY = 0; // sẽ cập nhật từ View sau
+    this.isFalling = false;
   }
 
   // Gán vị trí ban đầu từ View
@@ -58,8 +59,8 @@ export default class StemModel implements TModel {
    */
   public step( dt: number ): void {
     if ( this.isFalling ) {
+      this.position += this.velocity * dt + 0.5 * this.gravity * dt * dt;
       this.velocity += this.gravity * dt;
-      this.position += this.velocity * dt;
 
       // Nếu chạm đất thì dừng lại
       if ( this.position >= this.groundY ) {

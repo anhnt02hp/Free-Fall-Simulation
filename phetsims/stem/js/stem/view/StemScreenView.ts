@@ -35,12 +35,7 @@ export default class StemScreenView extends ScreenView {
 
   public constructor( model: StemModel, providedOptions: StemScreenViewOptions ) {
 
-    const options = optionize<StemScreenViewOptions, SelfOptions, ScreenViewOptions>()( {
-
-      //TODO add default values for optional SelfOptions here
-
-      //TODO add default values for optional ScreenViewOptions here
-    }, providedOptions );
+    const options = optionize<StemScreenViewOptions, SelfOptions, ScreenViewOptions>()( {}, providedOptions );
     super( options );
     this.model = model;
 
@@ -52,11 +47,15 @@ export default class StemScreenView extends ScreenView {
 
     const screenWidth = screenRight - screenLeft;
     const screenHeight = screenBottom - screenTop;
-    //===================================================
-
-    // ================== BACKGROUND SKY AND GROUND ======================
     const skyHeight = screenHeight * 0.8;
     const groundHeight = screenHeight * 0.2;
+    //===================================================
+
+    // Vị trí ban đầu (đặt bóng nằm giữa phần mặt đất)
+    const initialX = this.layoutBounds.centerX;
+    const initialY = this.layoutBounds.top + skyHeight + groundHeight / 2;
+
+    // ================== BACKGROUND SKY AND GROUND ======================
     // Bầu trời (80% chiều cao màn hình)
     const sky = new Rectangle( 0, 0, screenWidth, skyHeight, {
       fill: '#dbf3fa',
@@ -73,10 +72,6 @@ export default class StemScreenView extends ScreenView {
     } );
     this.addChild( ground );
     // ===================================================================
-    
-    // Vị trí ban đầu (đặt bóng nằm giữa phần mặt đất)
-    const initialX = this.layoutBounds.centerX;
-    const initialY = this.layoutBounds.top + skyHeight + groundHeight / 2;
 
     //=================CREATE REFERENCE LINE============================
     const referenceLine = new Line(
@@ -96,7 +91,7 @@ export default class StemScreenView extends ScreenView {
 
     // Gửi vị trí ban đầu và mặt đất cho Model
     this.model.setInitialPosition( initialY - radius );
-    this.model.setGroundY( initialY - radius ); // Mặt đất là tại initialY
+    this.model.setGroundY( initialY - radius); // Mặt đất là tại initialY
 
     const dragCircle = new Circle( radius, {
       fill: 'red',
@@ -118,17 +113,17 @@ export default class StemScreenView extends ScreenView {
       translateNode: true,
       
       drag: ( event, listener ) => {
-        // Giới hạn kéo theo X
         dragCircle.centerX = Math.max(
           dragBounds.minX + radius,
           Math.min( dragBounds.maxX - radius, dragCircle.centerX )
         );
 
-        // Giới hạn kéo theo Y (trên: sky top, dưới: initialY)
         dragCircle.centerY = Math.max(
           dragBounds.minY + radius,
           Math.min( dragBounds.maxY - radius, dragCircle.centerY )
         );
+
+        this.model.setInitialPosition( dragCircle.centerY );
       },
 
       end: ( event, listener ) => {
@@ -137,8 +132,6 @@ export default class StemScreenView extends ScreenView {
       }
     } );
 
-
-    
     dragCircle.addInputListener( dragListener );
     this.dragCircle = dragCircle;
     this.addChild( dragCircle );
@@ -169,6 +162,7 @@ export default class StemScreenView extends ScreenView {
 
     // Cập nhật lại model
     this.model.setInitialPosition( this.dragCircle.centerY );
+    this.model.setGroundY( this.draggableCircleInitialPosition.y - radius ); 
     this.model.reset();
     //==============================================================
   }
@@ -181,9 +175,7 @@ export default class StemScreenView extends ScreenView {
     this.model.step( dt );
 
     // Cập nhật vị trí hình tròn từ model
-    if ( this.model.isFalling ) {
-      this.dragCircle.centerY = this.model.position;
-    }
+    this.dragCircle.centerY = this.model.position;
   }
 }
 
