@@ -39,6 +39,9 @@ export default class StemScreenView extends ScreenView {
     super( options );
     this.model = model;
 
+    //Check drag or not
+    let wasDragged = false;
+
     //=============UI CONSTANT===========================
     const screenLeft = this.layoutBounds.left;
     const screenRight = this.layoutBounds.right;
@@ -111,28 +114,45 @@ export default class StemScreenView extends ScreenView {
     // Tạo DragListener với closure truy cập dragCircle
     const dragListener = new DragListener( {
       translateNode: true,
-      
-      drag: ( event, listener ) => {
-        dragCircle.centerX = Math.max(
-          dragBounds.minX + radius,
-          Math.min( dragBounds.maxX - radius, dragCircle.centerX )
-        );
 
-        dragCircle.centerY = Math.max(
-          dragBounds.minY + radius,
-          Math.min( dragBounds.maxY - radius, dragCircle.centerY )
-        );
-
-        this.model.setInitialPosition( dragCircle.centerY );
+      start: () => {
+        wasDragged = false; // reset mỗi lần bắt đầu
       },
 
-      end: ( event, listener ) => {
+      drag: () => {
+        wasDragged = true;
+
+        // cập nhật vị trí
+        if ( !this.model.isFalling ) {
+          dragCircle.centerX = Math.max(
+            dragBounds.minX + radius,
+            Math.min( dragBounds.maxX - radius, dragCircle.centerX )
+          );
+          dragCircle.centerY = Math.max(
+            dragBounds.minY + radius,
+            Math.min( dragBounds.maxY - radius, dragCircle.centerY )
+          );
+          this.model.setInitialPosition( dragCircle.centerY );
+        }
+      },
+
+      end: () => {
         this.model.setInitialPosition( dragCircle.centerY );
-        this.model.startFalling();
+        // this.model.startFalling();
       }
     } );
 
     dragCircle.addInputListener( dragListener );
+
+    dragCircle.addInputListener( {
+      up: event => {
+        if ( !wasDragged && !this.model.isFalling ) {
+          this.model.setInitialPosition( dragCircle.centerY );
+          this.model.startFalling();
+        }
+      }
+    } );
+
     this.dragCircle = dragCircle;
     this.addChild( dragCircle );
     //===========================================================
