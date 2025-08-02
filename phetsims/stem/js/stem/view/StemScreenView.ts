@@ -26,10 +26,12 @@ type SelfOptions = {
 
 type StemScreenViewOptions = SelfOptions & ScreenViewOptions;
 
+const radius = 20;
+
 export default class StemScreenView extends ScreenView {
   private readonly draggableCircleInitialPosition = { x: 0, y: 0 };
   private readonly dragCircle: Circle;
-  
+
   public constructor( model: StemModel, providedOptions: StemScreenViewOptions ) {
 
     const options = optionize<StemScreenViewOptions, SelfOptions, ScreenViewOptions>()( {
@@ -89,8 +91,6 @@ export default class StemScreenView extends ScreenView {
     //=================CREATE CIRCLE============================
     // Lưu vị trí ban đầu vào biến instance
     this.draggableCircleInitialPosition = new Vector2( initialX, initialY );
-
-    const radius = 20;
 
     const dragCircle = new Circle( radius, {
       fill: 'red',
@@ -154,7 +154,7 @@ export default class StemScreenView extends ScreenView {
   public reset(): void {
     //======RESET CIRCLE POSITION===================================
     this.dragCircle.centerX = this.draggableCircleInitialPosition.x;
-    this.dragCircle.centerY = this.draggableCircleInitialPosition.y;
+    this.dragCircle.centerY = this.draggableCircleInitialPosition.y - radius;
     //==============================================================
   }
 
