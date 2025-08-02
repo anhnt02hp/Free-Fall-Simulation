@@ -18,16 +18,38 @@ type SelfOptions = {
 type StemModelOptions = SelfOptions & PickRequired<PhetioObjectOptions, 'tandem'>;
 
 export default class StemModel implements TModel {
+  // Thuộc tính trạng thái của vật thể
+  public position: number; // vị trí theo trục Y
+  public velocity: number; // vận tốc
+  public readonly gravity: number = 1000; // gia tốc trọng trường (px/s²)
+  public groundY: number; // vị trí mặt đất theo Y
+  public isFalling: boolean = false;
 
   public constructor( providedOptions: StemModelOptions ) {
-    //TODO
+    this.position = 0;
+    this.velocity = 0;
+    this.groundY = 0; // sẽ cập nhật từ View sau
+  }
+
+  // Gán vị trí ban đầu từ View
+  public setInitialPosition( y: number ): void {
+    this.position = y;
+  }
+
+  public setGroundY( y: number ): void {
+    this.groundY = y;
+  }
+
+  public startFalling(): void {
+    this.isFalling = true;
   }
 
   /**
    * Resets the model.
    */
   public reset(): void {
-    //TODO
+    this.velocity = 0;
+    this.isFalling = false;
   }
 
   /**
@@ -35,7 +57,17 @@ export default class StemModel implements TModel {
    * @param dt - time step, in seconds
    */
   public step( dt: number ): void {
-    //TODO
+    if ( this.isFalling ) {
+      this.velocity += this.gravity * dt;
+      this.position += this.velocity * dt;
+
+      // Nếu chạm đất thì dừng lại
+      if ( this.position >= this.groundY ) {
+        this.position = this.groundY;
+        this.velocity = 0;
+        this.isFalling = false;
+      }
+    }
   }
 }
 

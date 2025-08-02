@@ -29,6 +29,7 @@ type StemScreenViewOptions = SelfOptions & ScreenViewOptions;
 const radius = 20;
 
 export default class StemScreenView extends ScreenView {
+  private readonly model: StemModel;
   private readonly draggableCircleInitialPosition = { x: 0, y: 0 };
   private readonly dragCircle: Circle;
 
@@ -41,6 +42,7 @@ export default class StemScreenView extends ScreenView {
       //TODO add default values for optional ScreenViewOptions here
     }, providedOptions );
     super( options );
+    this.model = model;
 
     //=============UI CONSTANT===========================
     const screenLeft = this.layoutBounds.left;
@@ -92,6 +94,10 @@ export default class StemScreenView extends ScreenView {
     // Lưu vị trí ban đầu vào biến instance
     this.draggableCircleInitialPosition = new Vector2( initialX, initialY );
 
+    // Gửi vị trí ban đầu và mặt đất cho Model
+    this.model.setInitialPosition( initialY - radius );
+    this.model.setGroundY( initialY - radius ); // Mặt đất là tại initialY
+
     const dragCircle = new Circle( radius, {
       fill: 'red',
       centerX: initialX,
@@ -123,6 +129,11 @@ export default class StemScreenView extends ScreenView {
           dragBounds.minY + radius,
           Math.min( dragBounds.maxY - radius, dragCircle.centerY )
         );
+      },
+
+      end: ( event, listener ) => {
+        this.model.setInitialPosition( dragCircle.centerY );
+        this.model.startFalling();
       }
     } );
 
@@ -155,6 +166,10 @@ export default class StemScreenView extends ScreenView {
     //======RESET CIRCLE POSITION===================================
     this.dragCircle.centerX = this.draggableCircleInitialPosition.x;
     this.dragCircle.centerY = this.draggableCircleInitialPosition.y - radius;
+
+    // Cập nhật lại model
+    this.model.setInitialPosition( this.dragCircle.centerY );
+    this.model.reset();
     //==============================================================
   }
 
@@ -163,7 +178,12 @@ export default class StemScreenView extends ScreenView {
    * @param dt - time step, in seconds
    */
   public override step( dt: number ): void {
-    //TODO
+    this.model.step( dt );
+
+    // Cập nhật vị trí hình tròn từ model
+    if ( this.model.isFalling ) {
+      this.dragCircle.centerY = this.model.position;
+    }
   }
 }
 
