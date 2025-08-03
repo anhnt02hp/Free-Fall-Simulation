@@ -36,6 +36,7 @@ export default class StemScreenView extends ScreenView {
   private readonly dragCircle: Circle;
   private readonly sText: Text;
   private hText!: Text;
+  private lastHFalling: number = 0;
   private vText!: Text;
   private vmaxText!: Text;
   private tText!: Text;
@@ -293,6 +294,18 @@ export default class StemScreenView extends ScreenView {
     // Giả sử mỗi pixel là 1 đơn vị (hoặc bạn có thể chia cho scale nào đó để ra mét)
     const sMeters = ( s / 100 ).toFixed( 2 ); // ví dụ: 100px = 1m
     this.sText.string = `s = ${sMeters} m`;
+
+    //======================Cập nhât giá trị h=======================
+    if ( this.model.isFalling ) {
+      const h = this.model.groundY - this.dragCircle.centerY;
+      this.model.lastHeight = h; // lưu lại trong lúc rơi
+      const hMeters = ( h / 100 ).toFixed( 2 );
+      this.hText.string = `h = ${hMeters} m`;
+    }
+    else {
+      const hMeters = ( this.model.lastHeight / 100 ).toFixed( 2 );
+      this.hText.string = `h = ${hMeters} m`;
+    }
 
     //======================CẬP NHẬT GIÁ TRỊ v =======================
     // Lấy vận tốc từ model

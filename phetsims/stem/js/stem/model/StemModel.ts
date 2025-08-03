@@ -27,6 +27,8 @@ export default class StemModel implements TModel {
   public groundY: number; // vị trí mặt đất theo Y
   public isFalling: boolean = false;
   private initialY: number = 0; //thêm vị trí ban đầu để tính t
+  public lastHeight: number = 0;
+  private hasLanded: boolean = false;
 
   public constructor( providedOptions: StemModelOptions ) {
     this.position = 0;
@@ -48,6 +50,7 @@ export default class StemModel implements TModel {
 
   public startFalling(): void {
     this.isFalling = true;
+    this.hasLanded = false;
   }
 
   /**
@@ -59,6 +62,7 @@ export default class StemModel implements TModel {
     this.fallingTime = 0;
     this.isFalling = false;
     this.vMax = 0;
+    this.hasLanded = false;
   }
 
   /**
@@ -77,6 +81,11 @@ export default class StemModel implements TModel {
         this.position = this.groundY;
         this.velocity = 0;
         this.isFalling = false;
+
+        if ( !this.hasLanded ) {
+          this.lastHeight = this.groundY - this.initialY;
+          this.hasLanded = true;
+        }
       }
     }
   }
