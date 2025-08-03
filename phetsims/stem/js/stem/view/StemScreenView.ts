@@ -19,6 +19,8 @@ import Color from '../../../../scenery/js/util/Color.js';
 import Bounds2 from '../../../../dot/js/Bounds2.js';
 import Vector2 from '../../../../dot/js/Vector2.js';
 import Line from '../../../../scenery/js/nodes/Line.js';
+import PhetFont from '../../../../scenery-phet/js/PhetFont.js';
+import Text from '../../../../scenery/js/nodes/Text.js';
 
 type SelfOptions = {
  //TODO add options that are specific to StemScreenView here
@@ -32,6 +34,9 @@ export default class StemScreenView extends ScreenView {
   private readonly model: StemModel;
   private readonly draggableCircleInitialPosition = { x: 0, y: 0 };
   private readonly dragCircle: Circle;
+  private readonly sText: Text;
+  private vText!: Text;
+  private tText!: Text;
 
   public constructor( model: StemModel, providedOptions: StemScreenViewOptions ) {
 
@@ -87,6 +92,62 @@ export default class StemScreenView extends ScreenView {
     );
     this.addChild( referenceLine );
     //=================================================================
+
+    //==========INFORMATION BOX=====================================
+    const rectWidth = 220;
+    const rectHeight = 150;
+    const cornerRadius = 10; // độ bo tròn của góc
+
+    // Góc trên bên phải => x là sát mép phải - rectWidth, y là top
+    const rectX = screenRight - rectWidth - 10;
+    const rectY = screenTop + 10;
+
+    const myRoundedRect = new Rectangle(
+      rectX, rectY,
+      rectWidth, rectHeight,
+      {
+        fill: 'white',
+        stroke: 'black',
+        lineWidth: 1,
+        cornerRadius: cornerRadius
+      }
+    );
+
+    this.addChild( myRoundedRect );
+
+    //============TITLEBOX============================
+    const titleText = new Text('FREE-FALL INFORMATION', {
+      font: new PhetFont({ size: 16, weight: 'bold' }),
+      fill: 'black'
+    });
+    titleText.left = rectX + 10;
+    titleText.top = rectY + 10;
+    this.addChild(titleText);
+
+    //============THÊM TEXT HIỂN THỊ s =======================
+    this.sText = new Text('s = 0.0 m', {
+      font: new PhetFont( 18 ),
+      fill: 'black'
+    });
+    // Căn trái cùng titleText
+    this.sText.left = titleText.left;
+    // Cách titleText 30px để không đụng nhau
+    this.sText.top = titleText.bottom + 10;
+    this.addChild(this.sText);
+
+    //=============THÊM TEXT HIỂN THỊ v ============
+    this.vText = new Text('v = 0.0 m/s', {
+      font: new PhetFont( 18 ),
+      fill: 'black'
+    });
+    this.vText.left = titleText.left;
+    this.vText.top = this.sText.bottom + 5;
+    this.addChild(this.vText);
+
+    //=============THÊM TEXT HIỂN THỊ t ============
+    
+
+    //===============================================================
 
     //=================CREATE CIRCLE============================
     // Lưu vị trí ban đầu vào biến instance
@@ -196,6 +257,22 @@ export default class StemScreenView extends ScreenView {
 
     // Cập nhật vị trí hình tròn từ model
     this.dragCircle.centerY = this.model.position;
+
+    // ==================== CẬP NHẬT GIÁ TRỊ s ======================
+    const referenceY = this.draggableCircleInitialPosition.y - radius;
+    const currentY = this.dragCircle.centerY;
+    const s = referenceY - currentY;
+
+    // Giả sử mỗi pixel là 1 đơn vị (hoặc bạn có thể chia cho scale nào đó để ra mét)
+    const sMeters = ( s / 100 ).toFixed( 2 ); // ví dụ: 100px = 1m
+    this.sText.string = `s = ${sMeters} m`;
+
+    //======================CẬP NHẬT GIÁ TRỊ v =======================
+    // Lấy vận tốc từ model
+    const v = this.model.velocity;
+    const vMeters = ( v / 100 ).toFixed( 2 ); // giả sử 100px = 1m
+    this.vText.string = `v = ${vMeters} m/s`;
+
   }
 }
 
