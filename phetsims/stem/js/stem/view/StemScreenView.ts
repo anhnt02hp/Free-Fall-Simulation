@@ -35,7 +35,9 @@ export default class StemScreenView extends ScreenView {
   private readonly draggableCircleInitialPosition = { x: 0, y: 0 };
   private readonly dragCircle: Circle;
   private readonly sText: Text;
+  private hText!: Text;
   private vText!: Text;
+  private vmaxText!: Text;
   private tText!: Text;
 
   public constructor( model: StemModel, providedOptions: StemScreenViewOptions ) {
@@ -95,7 +97,7 @@ export default class StemScreenView extends ScreenView {
 
     //==========INFORMATION BOX=====================================
     const rectWidth = 220;
-    const rectHeight = 150;
+    const rectHeight = 200;
     const cornerRadius = 10; // độ bo tròn của góc
 
     // Góc trên bên phải => x là sát mép phải - rectWidth, y là top
@@ -135,14 +137,32 @@ export default class StemScreenView extends ScreenView {
     this.sText.top = titleText.bottom + 10;
     this.addChild(this.sText);
 
+    //=============THÊM TEXT HIỂN THỊ h ============
+    this.hText = new Text('h = 0.0 m', {
+      font: new PhetFont( 18 ),
+      fill: 'black'
+    });
+    this.hText.left = titleText.left;
+    this.hText.top = this.sText.bottom + 5;
+    this.addChild(this.hText);
+
     //=============THÊM TEXT HIỂN THỊ v ============
     this.vText = new Text('v = 0.0 m/s', {
       font: new PhetFont( 18 ),
       fill: 'black'
     });
     this.vText.left = titleText.left;
-    this.vText.top = this.sText.bottom + 5;
+    this.vText.top = this.hText.bottom + 5;
     this.addChild(this.vText);
+
+    //=============THÊM TEXT HIỂN THỊ vmax ============
+    this.vmaxText = new Text('vmax = 0.0 m/s', {
+      font: new PhetFont( 18 ),
+      fill: 'black'
+    });
+    this.vmaxText.left = titleText.left;
+    this.vmaxText.top = this.vText.bottom + 5;
+    this.addChild(this.vmaxText);
 
     //=============THÊM TEXT HIỂN THỊ t ============
     this.tText = new Text('t = 0.0 s', {
@@ -150,7 +170,7 @@ export default class StemScreenView extends ScreenView {
       fill: 'black'
     });
     this.tText.left = titleText.left;
-    this.tText.top = this.vText.bottom + 5;
+    this.tText.top = this.vmaxText.bottom + 5;
     this.addChild(this.tText);    
 
     //===============================================================
@@ -280,7 +300,14 @@ export default class StemScreenView extends ScreenView {
     const vMeters = ( v / 100 ).toFixed( 2 ); // giả sử 100px = 1m
     this.vText.string = `v = ${vMeters} m/s`;
 
+    //======================CẬP NHẬT GIÁ TRỊ vmax =======================
+    // Lấy vận tốc từ model
+    const vmax = this.model.vMax;
+    const vmaxMeters = ( vmax / 100 ).toFixed( 2 ); // giả sử 100px = 1m
+    this.vmaxText.string = `vmax = ${vmaxMeters} m/s`;
+
     //======================CẬP NHẬT GIÁ TRỊ t =======================
+    //Lấy time từ model
     const t = this.model.fallingTime;
     const ts = t.toFixed( 2 );
     this.tText.string = `t = ${ts} s`;

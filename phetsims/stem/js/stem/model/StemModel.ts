@@ -21,6 +21,7 @@ export default class StemModel implements TModel {
   // Thuộc tính trạng thái của vật thể
   public position: number; // vị trí theo trục Y
   public velocity: number; // vận tốc
+  public vMax: number = 0;
   public fallingTime: number; // thời gian rơi
   public readonly gravity: number = 1000; // gia tốc trọng trường (px/s²)
   public groundY: number; // vị trí mặt đất theo Y
@@ -57,6 +58,7 @@ export default class StemModel implements TModel {
     this.fallingTime = 0;
     this.fallingTime = 0;
     this.isFalling = false;
+    this.vMax = 0;
   }
 
   /**
@@ -68,7 +70,8 @@ export default class StemModel implements TModel {
       this.position += this.velocity * dt + 0.5 * this.gravity * dt * dt;
       this.velocity += this.gravity * dt;
       this.fallingTime = Math.sqrt( 2 * ( this.position - this.initialY ) / this.gravity );
-
+      this.vMax = Math.max( this.vMax, this.velocity );
+      
       // Nếu chạm đất thì dừng lại
       if ( this.position >= this.groundY ) {
         this.position = this.groundY;
