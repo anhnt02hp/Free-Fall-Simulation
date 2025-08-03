@@ -145,7 +145,13 @@ export default class StemScreenView extends ScreenView {
     this.addChild(this.vText);
 
     //=============THÊM TEXT HIỂN THỊ t ============
-    
+    this.tText = new Text('t = 0.0 s', {
+      font: new PhetFont( 18 ),
+      fill: 'black'
+    });
+    this.tText.left = titleText.left;
+    this.tText.top = this.vText.bottom + 5;
+    this.addChild(this.tText);    
 
     //===============================================================
 
@@ -273,6 +279,10 @@ export default class StemScreenView extends ScreenView {
     const vMeters = ( v / 100 ).toFixed( 2 ); // giả sử 100px = 1m
     this.vText.string = `v = ${vMeters} m/s`;
 
+    //======================CẬP NHẬT GIÁ TRỊ t =======================
+    const t = this.model.fallingTime;
+    const ts = t.toFixed( 2 );
+    this.tText.string = `t = ${ts} s`;
   }
 }
 
