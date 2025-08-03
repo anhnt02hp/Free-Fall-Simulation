@@ -184,6 +184,7 @@ export default class StemScreenView extends ScreenView {
 
       start: () => {
         wasDragged = false; // reset mỗi lần bắt đầu
+        this.model.reset();
       },
 
       drag: () => {
