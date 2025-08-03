@@ -62,6 +62,7 @@ export default class StemModel implements TModel {
     this.fallingTime = 0;
     this.isFalling = false;
     this.vMax = 0;
+    this.lastHeight = 0;
     this.hasLanded = false;
   }
 
