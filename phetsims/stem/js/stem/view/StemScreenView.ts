@@ -28,7 +28,7 @@ type SelfOptions = {
 
 type StemScreenViewOptions = SelfOptions & ScreenViewOptions;
 
-const radius = 20;
+const radius = 15;
 
 export default class StemScreenView extends ScreenView {
   private readonly model: StemModel;
@@ -58,16 +58,16 @@ export default class StemScreenView extends ScreenView {
 
     const screenWidth = screenRight - screenLeft;
     const screenHeight = screenBottom - screenTop;
-    const skyHeight = screenHeight * 0.8;
-    const groundHeight = screenHeight * 0.2;
+    const skyHeight = screenHeight * 0.95;
+    const groundHeight = screenHeight * 0.05;
     //===================================================
 
     // Vị trí ban đầu (đặt bóng nằm giữa phần mặt đất)
     const initialX = this.layoutBounds.centerX;
-    const initialY = this.layoutBounds.top + skyHeight + groundHeight / 2;
+    const initialY = this.layoutBounds.top + skyHeight + groundHeight / 100;
 
     // ================== BACKGROUND SKY AND GROUND ======================
-    // Bầu trời (80% chiều cao màn hình)
+    // Bầu trời (95% chiều cao màn hình)
     const sky = new Rectangle( 0, 0, screenWidth, skyHeight, {
       fill: '#dbf3fa',
       left: screenLeft,
@@ -75,7 +75,7 @@ export default class StemScreenView extends ScreenView {
     } );
     this.addChild( sky );
 
-    // Mặt đất (20% chiều cao màn hình)
+    // Mặt đất (5% chiều cao màn hình)
     const ground = new Rectangle( 0, 0, screenWidth, groundHeight, {
       fill: '#77dd77',
       left: screenLeft,
