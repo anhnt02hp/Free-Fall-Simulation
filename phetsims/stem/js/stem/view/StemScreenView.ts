@@ -36,7 +36,6 @@ export default class StemScreenView extends ScreenView {
   private readonly dragCircle: Circle;
   private readonly sText: Text;
   private hText!: Text;
-  private lastHFalling: number = 0;
   private vText!: Text;
   private vmaxText!: Text;
   private tText!: Text;
