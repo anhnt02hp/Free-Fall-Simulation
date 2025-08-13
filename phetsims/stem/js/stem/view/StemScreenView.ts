@@ -109,6 +109,28 @@ export default class StemScreenView extends ScreenView {
     this.addChild( referenceLine );
     //=================================================================
 
+
+    //=====================AIR RESISTANCE============================
+    const airButtonLabelProperty = new Property(
+      `Air Resistance: ${this.model.objectA.airResistanceEnabled ? 'ON' : 'OFF'}`
+    );
+
+    const airToggleButton = new TextPushButton( airButtonLabelProperty, {
+      font: new PhetFont( 14 ),
+      baseColor: '#f4c542',
+      listener: () => {
+        const newState = !this.model.objectA.airResistanceEnabled;
+        this.model.setAirResistance(newState);
+        airButtonLabelProperty.value = `Air Resistance: ${newState ? 'ON' : 'OFF'}`;
+      }
+    });
+
+    // Đặt nút ngay bên trên Box A
+    airToggleButton.left = screenRight - 220 - 10;
+    airToggleButton.top  = screenTop + 10;
+    this.addChild( airToggleButton );
+    //==================================================================
+
     //==========INFORMATION BOX A=====================================
     const rectWidth = 220;
     const rectHeight = 200;
@@ -175,7 +197,7 @@ export default class StemScreenView extends ScreenView {
     //==========INFORMATION BOX B=====================================
     // Vị trí box B (dưới box A)
     const rectB_X = rectA_X;
-    const rectB_Y = infoBoxA.bottom + 20; // cách box A 20px
+    const rectB_Y = infoBoxA.bottom + 90;
 
     const infoBoxB = new Rectangle(
       rectB_X, rectB_Y,       // vị trí góc trên bên trái
@@ -241,28 +263,6 @@ export default class StemScreenView extends ScreenView {
       this.vmaxText_B.visible = visible;
       this.tText_B.visible = visible;
     });
-
-
-    //=====================AIR RESISTANCE============================
-    const airButtonLabelProperty = new Property(
-      `Air Resistance: ${this.model.objectA.airResistanceEnabled ? 'ON' : 'OFF'}`
-    );
-
-    const airToggleButton = new TextPushButton( airButtonLabelProperty, {
-      font: new PhetFont( 14 ),
-      baseColor: '#f4c542',
-      listener: () => {
-        const newState = !this.model.objectA.airResistanceEnabled;
-        this.model.setAirResistance(newState);
-        airButtonLabelProperty.value = `Air Resistance: ${newState ? 'ON' : 'OFF'}`;
-      }
-    });
-
-    // Đặt nút ngay bên dưới Box B
-    airToggleButton.left = infoBoxB.left;      
-    airToggleButton.top  = infoBoxB.bottom + 10; 
-    this.addChild( airToggleButton );
-    //==================================================================
 
     //========================================================================
 
@@ -399,6 +399,15 @@ export default class StemScreenView extends ScreenView {
     const modeRadioGroup = new FreefallModeRadioButtonGroup( freefallModeProperty );
     modeRadioGroup.left = airToggleButton.left;
     modeRadioGroup.top = airToggleButton.bottom + 10;
+    //Dịch chuyển box A xuống dưới 2 nút
+    infoBoxA.top = modeRadioGroup.bottom + 10;
+    titleText_A.top = infoBoxA.top + 10;
+    this.sText_A.top = titleText_A.bottom + 10;
+    this.hText_A.top = this.sText_A.bottom + 5;
+    this.vText_A.top = this.hText_A.bottom + 5;
+    this.vmaxText_A.top = this.vText_A.bottom + 5;
+    this.tText_A.top = this.vmaxText_A.bottom + 5;
+
 
     this.addChild( modeRadioGroup );
 
