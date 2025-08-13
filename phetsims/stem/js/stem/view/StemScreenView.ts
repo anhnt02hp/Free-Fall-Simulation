@@ -15,7 +15,6 @@ import StemModel from '../model/StemModel.js';
 import Circle from '../../../../scenery/js/nodes/Circle.js';
 import DragListener from '../../../../scenery/js/listeners/DragListener.js';
 import Rectangle from '../../../../scenery/js/nodes/Rectangle.js';
-import Color from '../../../../scenery/js/util/Color.js';
 import Bounds2 from '../../../../dot/js/Bounds2.js';
 import Vector2 from '../../../../dot/js/Vector2.js';
 import Line from '../../../../scenery/js/nodes/Line.js';
@@ -23,6 +22,7 @@ import PhetFont from '../../../../scenery-phet/js/PhetFont.js';
 import Text from '../../../../scenery/js/nodes/Text.js';
 import TextPushButton from '../../../../sun/js/buttons/TextPushButton.js';
 import Property from '../../../../axon/js/Property.js';
+import FreefallModeRadioButtonGroup, { FreefallMode } from './FreefallModeRadioButtonGroup.js';
 
 type SelfOptions = {
  //TODO add options that are specific to StemScreenView here
@@ -177,7 +177,7 @@ export default class StemScreenView extends ScreenView {
 
     //===============================================================
 
-    // Nút bật/tắt lực cản không khí
+    //=====================AIR RESISTANCE============================
     const airButtonLabelProperty = new Property( 'Air Resistance: OFF' );
 
     const airToggleButton = new TextPushButton( airButtonLabelProperty, {
@@ -194,6 +194,21 @@ export default class StemScreenView extends ScreenView {
     airToggleButton.left = rectX;
     airToggleButton.top = myRoundedRect.bottom + 10;
     this.addChild( airToggleButton );
+    //==================================================================
+
+    // ================= MODE RADIO BUTTON (1 vật / 2 vật) =================
+    const freefallModeProperty = new Property<FreefallMode>( FreefallMode.ONE_OBJECT );
+
+    const modeRadioGroup = new FreefallModeRadioButtonGroup( freefallModeProperty );
+    modeRadioGroup.left = airToggleButton.left;
+    modeRadioGroup.top = airToggleButton.bottom + 10;
+
+    this.addChild( modeRadioGroup );
+
+    // Lắng nghe khi đổi chế độ để cập nhật model
+    freefallModeProperty.link( mode => {
+      //this.model.setFreefallMode( mode ); // bạn sẽ cần viết hàm này trong StemModel
+    });
 
     //=================CREATE CIRCLE============================
     // Lưu vị trí ban đầu vào biến instance
