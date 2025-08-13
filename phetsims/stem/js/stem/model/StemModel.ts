@@ -18,66 +18,35 @@ type SelfOptions = {
 
 type StemModelOptions = SelfOptions & PickRequired<PhetioObjectOptions, 'tandem'>;
 
-export enum FreefallMode {
-  ONE_OBJECT,
-  TWO_OBJECTS
-}
+class FallingObject {
+  public position = 0;
+  public velocity = 0;
+  public vMax = 0;
+  public fallingTime = 0;
+  public isFalling = false;
+  public lastHeight = 0;
+  private hasLanded = false;
+  private initialY = 0;
 
-export default class StemModel implements TModel {
+  public groundY = 0;
+  public airResistanceEnabled = false;
 
-  // Chế độ rơi và hiển thị vật thể
-  public freefallModeProperty = new Property<FreefallMode>( FreefallMode.ONE_OBJECT );
-  public objectAVisibleProperty = new Property<boolean>( true );
-  public objectBVisibleProperty = new Property<boolean>( false );
+  public constructor(
+    public gravity: number,
+    public airResistanceCoefficient: number = 2.5
+  ) {}
 
-  // Thuộc tính trạng thái của vật thể
-  public position: number; // vị trí theo trục Y
-  public velocity: number; // vận tốc
-  public vMax: number = 0;
-  public fallingTime: number; // thời gian rơi
-  public readonly gravity: number = 1000; // gia tốc trọng trường (px/s²)
-  public groundY: number; // vị trí mặt đất theo Y
-  public isFalling: boolean = false;
-  private initialY: number = 0; //thêm vị trí ban đầu để tính t
-  public lastHeight: number = 0;
-  private hasLanded: boolean = false;
-
-  public airResistanceEnabled: boolean = false; // bật/tắt lực cản
-  public airResistanceCoefficient: number = 2.5; // hệ số lực cản (tùy chỉnh)
-
-  // Bật/tắt lực cản
-  public setAirResistance(enabled: boolean): void {
-    this.airResistanceEnabled = enabled;
-  }
-
-  public constructor( providedOptions: StemModelOptions ) {
-    this.position = 0;
-    this.velocity = 0;
-    this.fallingTime = 0;
-    this.groundY = 0; // sẽ cập nhật từ View sau
-    this.isFalling = false;
-
-    // Link chế độ rơi với hiển thị vật thể
-    this.freefallModeProperty.link( mode => {
-      if ( mode === FreefallMode.ONE_OBJECT ) {
-        this.objectAVisibleProperty.value = true;
-        this.objectBVisibleProperty.value = false;
-      }
-      else {
-        this.objectAVisibleProperty.value = true;
-        this.objectBVisibleProperty.value = true;
-      }
-    });
-  }
-
-  // Gán vị trí ban đầu từ View
-  public setInitialPosition( y: number ): void {
+  public setInitialPosition(y: number): void {
     this.position = y;
     this.initialY = y;
   }
 
-  public setGroundY( y: number ): void {
+  public setGroundY(y: number): void {
     this.groundY = y;
+  }
+
+  public setAirResistance(enabled: boolean): void {
+    this.airResistanceEnabled = enabled;
   }
 
   public startFalling(): void {
@@ -85,57 +54,106 @@ export default class StemModel implements TModel {
     this.hasLanded = false;
   }
 
-  /**
-   * Resets the model.
-   */
   public reset(): void {
     this.velocity = 0;
-    this.fallingTime = 0;
     this.fallingTime = 0;
     this.isFalling = false;
     this.vMax = 0;
     this.lastHeight = 0;
     this.hasLanded = false;
+    this.position = this.initialY;
   }
 
-  /**
-   * Steps the model.
-   * @param dt - time step, in seconds
-   */
-  public step( dt: number ): void {
-    if ( this.isFalling ) {
-      if ( this.airResistanceEnabled ) {
-        // Lực cản tuyến tính: a = g - k*v
-        const drag = this.airResistanceCoefficient * this.velocity;
-        this.position += this.velocity * dt + 0.5 * ( this.gravity - drag ) * dt * dt;
-        this.velocity += ( this.gravity - drag ) * dt;
-      }
-      else {
-        // Không có lực cản
-        this.position += this.velocity * dt + 0.5 * this.gravity * dt * dt;
-        this.velocity += this.gravity * dt;
-      }
+  public step(dt: number): void {
+    if (!this.isFalling) return;
 
-      // Giữ nguyên công thức tính t
-      this.fallingTime = Math.sqrt(
-        2 * ( this.position - this.initialY ) / this.gravity
-      );
+    if (this.airResistanceEnabled) {
+      const drag = this.airResistanceCoefficient * this.velocity;
+      this.position += this.velocity * dt + 0.5 * (this.gravity - drag) * dt * dt;
+      this.velocity += (this.gravity - drag) * dt;
+    } else {
+      this.position += this.velocity * dt + 0.5 * this.gravity * dt * dt;
+      this.velocity += this.gravity * dt;
+    }
 
-      this.vMax = Math.max( this.vMax, this.velocity );
+    this.fallingTime = Math.sqrt(
+      2 * (this.position - this.initialY) / this.gravity
+    );
+    this.vMax = Math.max(this.vMax, this.velocity);
 
-      // Chạm đất
-      if ( this.position >= this.groundY ) {
-        this.position = this.groundY;
-        this.velocity = 0;
-        this.isFalling = false;
+    if (this.position >= this.groundY) {
+      this.position = this.groundY;
+      this.velocity = 0;
+      this.isFalling = false;
 
-        if ( !this.hasLanded ) {
-          this.lastHeight = this.groundY - this.initialY;
-          this.hasLanded = true;
-        }
+      if (!this.hasLanded) {
+        this.lastHeight = this.groundY - this.initialY;
+        this.hasLanded = true;
       }
     }
   }
 }
+
+export enum FreefallMode {
+  ONE_OBJECT,
+  TWO_OBJECTS
+}
+
+export default class StemModel implements TModel {
+  public freefallModeProperty = new Property<FreefallMode>(FreefallMode.ONE_OBJECT);
+  public objectAVisibleProperty = new Property<boolean>(true);
+  public objectBVisibleProperty = new Property<boolean>(false);
+
+  public objectA: FallingObject;
+  public objectB: FallingObject;
+
+  public constructor(options: StemModelOptions) {
+    const gravity = 1000; // px/s²
+    this.objectA = new FallingObject(gravity);
+    this.objectB = new FallingObject(gravity);
+
+    this.freefallModeProperty.link(mode => {
+      if (mode === FreefallMode.ONE_OBJECT) {
+        this.objectAVisibleProperty.value = true;
+        this.objectBVisibleProperty.value = false;
+      } else {
+        this.objectAVisibleProperty.value = true;
+        this.objectBVisibleProperty.value = true;
+      }
+    });
+  }
+
+  public setGroundY(y: number): void {
+    this.objectA.setGroundY(y);
+    this.objectB.setGroundY(y);
+  }
+
+  public setAirResistance(enabled: boolean): void {
+    this.objectA.setAirResistance(enabled);
+    this.objectB.setAirResistance(enabled);
+  }
+
+  public reset(): void {
+    // reset cả hai để giữ tương thích với TModel
+    this.objectA.reset();
+    this.objectB.reset();
+  }
+
+  // reset riêng objectA
+  public resetObjectA(): void {
+    this.objectA.reset();
+  }
+
+  // reset riêng objectB
+  public resetObjectB(): void {
+    this.objectB.reset();
+  }
+
+  public step(dt: number): void {
+    this.objectA.step(dt);
+    this.objectB.step(dt);
+  }
+}
+
 
 stem.register( 'StemModel', StemModel );

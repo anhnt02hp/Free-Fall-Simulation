@@ -39,11 +39,20 @@ export default class StemScreenView extends ScreenView {
 
   private readonly draggableSquareInitialPosition = { x: 0, y: 0 };
   private readonly dragSquare: Rectangle;
-  private readonly sText: Text;
-  private hText!: Text;
-  private vText!: Text;
-  private vmaxText!: Text;
-  private tText!: Text;
+  //================= Object A =================
+  private sText_A!: Text;
+  private hText_A!: Text;
+  private vText_A!: Text;
+  private vmaxText_A!: Text;
+  private tText_A!: Text;
+
+  //================= Object B =================
+  private sText_B!: Text;
+  private hText_B!: Text;
+  private vText_B!: Text;
+  private vmaxText_B!: Text;
+  private tText_B!: Text;
+
 
   public constructor( model: StemModel, providedOptions: StemScreenViewOptions ) {
 
@@ -100,18 +109,18 @@ export default class StemScreenView extends ScreenView {
     this.addChild( referenceLine );
     //=================================================================
 
-    //==========INFORMATION BOX=====================================
+    //==========INFORMATION BOX A=====================================
     const rectWidth = 220;
     const rectHeight = 200;
-    const cornerRadius = 10; // độ bo tròn của góc
+    const cornerRadius = 10;
 
-    // Góc trên bên phải => x là sát mép phải - rectWidth, y là top
-    const rectX = screenRight - rectWidth - 10;
-    const rectY = screenTop + 10;
+    // Vị trí box A (trên)
+    const rectA_X = screenRight - rectWidth - 10;
+    const rectA_Y = screenTop + 10;
 
-    const myRoundedRect = new Rectangle(
-      rectX, rectY,
-      rectWidth, rectHeight,
+    const infoBoxA = new Rectangle(
+      rectA_X, rectA_Y,       // vị trí góc trên bên trái
+      rectWidth, rectHeight,  // kích thước
       {
         fill: 'white',
         stroke: 'black',
@@ -120,84 +129,130 @@ export default class StemScreenView extends ScreenView {
       }
     );
 
-    this.addChild( myRoundedRect );
+    infoBoxA.left = rectA_X;
+    infoBoxA.top = rectA_Y;
+    this.addChild(infoBoxA);
 
-    //============TITLEBOX============================
-    const titleText = new Text('FREE-FALL INFORMATION', {
+    //============TITLEBOX A============================
+    const titleText_A = new Text('FREE-FALL: OBJECT A', {
       font: new PhetFont({ size: 16, weight: 'bold' }),
       fill: 'black'
     });
-    titleText.left = rectX + 10;
-    titleText.top = rectY + 10;
-    this.addChild(titleText);
+    titleText_A.left = infoBoxA.left + 10;
+    titleText_A.top = infoBoxA.top + 10;
+    this.addChild(titleText_A);
 
-    //============THÊM TEXT HIỂN THỊ s =======================
-    this.sText = new Text('s = 0.0 m', {
-      font: new PhetFont( 18 ),
+    //============TEXTS A===============================
+    this.sText_A = new Text('s = 0.0 m', { font: new PhetFont( 18 ), fill: 'black' });
+    this.hText_A = new Text('h = 0.0 m', { font: new PhetFont( 18 ), fill: 'black' });
+    this.vText_A = new Text('v = 0.0 m/s', { font: new PhetFont( 18 ), fill: 'black' });
+    this.vmaxText_A = new Text('vmax = 0.0 m/s', { font: new PhetFont( 18 ), fill: 'black' });
+    this.tText_A = new Text('t = 0.0 s', { font: new PhetFont( 18 ), fill: 'black' });
+
+    // Vị trí từng text A
+    this.sText_A.left = titleText_A.left;
+    this.sText_A.top = titleText_A.bottom + 10;
+
+    this.hText_A.left = titleText_A.left;
+    this.hText_A.top = this.sText_A.bottom + 5;
+
+    this.vText_A.left = titleText_A.left;
+    this.vText_A.top = this.hText_A.bottom + 5;
+
+    this.vmaxText_A.left = titleText_A.left;
+    this.vmaxText_A.top = this.vText_A.bottom + 5;
+
+    this.tText_A.left = titleText_A.left;
+    this.tText_A.top = this.vmaxText_A.bottom + 5;
+
+    // Add texts A
+    this.addChild(this.sText_A);
+    this.addChild(this.hText_A);
+    this.addChild(this.vText_A);
+    this.addChild(this.vmaxText_A);
+    this.addChild(this.tText_A);
+
+    //==========INFORMATION BOX B=====================================
+    // Vị trí box B (dưới box A)
+    const rectB_X = rectA_X;
+    const rectB_Y = infoBoxA.bottom + 20; // cách box A 20px
+
+    const infoBoxB = new Rectangle(
+      rectB_X, rectB_Y,       // vị trí góc trên bên trái
+      rectWidth, rectHeight,  // kích thước
+      {
+        fill: 'white',
+        stroke: 'black',
+        lineWidth: 1,
+        cornerRadius: cornerRadius
+      }
+    );
+
+    infoBoxB.left = rectB_X;
+    infoBoxB.top = rectB_Y;
+    this.addChild(infoBoxB);
+
+    //============TITLEBOX B============================
+    const titleText_B = new Text('FREE-FALL: OBJECT B', {
+      font: new PhetFont({ size: 16, weight: 'bold' }),
       fill: 'black'
     });
-    // Căn trái cùng titleText
-    this.sText.left = titleText.left;
-    // Cách titleText 30px để không đụng nhau
-    this.sText.top = titleText.bottom + 10;
-    this.addChild(this.sText);
+    titleText_B.left = infoBoxB.left + 10;
+    titleText_B.top = infoBoxB.top + 10;
+    this.addChild(titleText_B);
 
-    //=============THÊM TEXT HIỂN THỊ h ============
-    this.hText = new Text('h = 0.0 m', {
-      font: new PhetFont( 18 ),
-      fill: 'black'
-    });
-    this.hText.left = titleText.left;
-    this.hText.top = this.sText.bottom + 5;
-    this.addChild(this.hText);
+    //============TEXTS B===============================
+    this.sText_B = new Text('s = 0.0 m', { font: new PhetFont( 18 ), fill: 'blue' });
+    this.hText_B = new Text('h = 0.0 m', { font: new PhetFont( 18 ), fill: 'blue' });
+    this.vText_B = new Text('v = 0.0 m/s', { font: new PhetFont( 18 ), fill: 'blue' });
+    this.vmaxText_B = new Text('vmax = 0.0 m/s', { font: new PhetFont( 18 ), fill: 'blue' });
+    this.tText_B = new Text('t = 0.0 s', { font: new PhetFont( 18 ), fill: 'blue' });
 
-    //=============THÊM TEXT HIỂN THỊ v ============
-    this.vText = new Text('v = 0.0 m/s', {
-      font: new PhetFont( 18 ),
-      fill: 'black'
-    });
-    this.vText.left = titleText.left;
-    this.vText.top = this.hText.bottom + 5;
-    this.addChild(this.vText);
+    // Vị trí từng text B
+    this.sText_B.left = titleText_B.left;
+    this.sText_B.top = titleText_B.bottom + 10;
 
-    //=============THÊM TEXT HIỂN THỊ vmax ============
-    this.vmaxText = new Text('vmax = 0.0 m/s', {
-      font: new PhetFont( 18 ),
-      fill: 'black'
-    });
-    this.vmaxText.left = titleText.left;
-    this.vmaxText.top = this.vText.bottom + 5;
-    this.addChild(this.vmaxText);
+    this.hText_B.left = titleText_B.left;
+    this.hText_B.top = this.sText_B.bottom + 5;
 
-    //=============THÊM TEXT HIỂN THỊ t ============
-    this.tText = new Text('t = 0.0 s', {
-      font: new PhetFont( 18 ),
-      fill: 'black'
-    });
-    this.tText.left = titleText.left;
-    this.tText.top = this.vmaxText.bottom + 5;
-    this.addChild(this.tText);    
+    this.vText_B.left = titleText_B.left;
+    this.vText_B.top = this.hText_B.bottom + 5;
 
-    //===============================================================
+    this.vmaxText_B.left = titleText_B.left;
+    this.vmaxText_B.top = this.vText_B.bottom + 5;
+
+    this.tText_B.left = titleText_B.left;
+    this.tText_B.top = this.vmaxText_B.bottom + 5;
+
+    // Add texts B
+    this.addChild(this.sText_B);
+    this.addChild(this.hText_B);
+    this.addChild(this.vText_B);
+    this.addChild(this.vmaxText_B);
+    this.addChild(this.tText_B);
+
 
     //=====================AIR RESISTANCE============================
-    const airButtonLabelProperty = new Property( 'Air Resistance: OFF' );
+    const airButtonLabelProperty = new Property(
+      `Air Resistance: ${this.model.objectA.airResistanceEnabled ? 'ON' : 'OFF'}`
+    );
 
     const airToggleButton = new TextPushButton( airButtonLabelProperty, {
       font: new PhetFont( 14 ),
       baseColor: '#f4c542',
       listener: () => {
-        const newState = !this.model.airResistanceEnabled;
-        this.model.setAirResistance( newState );
+        const newState = !this.model.objectA.airResistanceEnabled;
+        this.model.setAirResistance(newState);
         airButtonLabelProperty.value = `Air Resistance: ${newState ? 'ON' : 'OFF'}`;
       }
     });
 
-    // Đặt vị trí nút (ví dụ bên dưới ô thông tin)
-    airToggleButton.left = rectX;
-    airToggleButton.top = myRoundedRect.bottom + 10;
+    // Đặt nút ngay bên dưới Box B
+    airToggleButton.left = infoBoxB.left;      
+    airToggleButton.top  = infoBoxB.bottom + 10; 
     this.addChild( airToggleButton );
     //==================================================================
+
 
     // ================= MODE RADIO BUTTON (1 vật / 2 vật) =================
     const freefallModeProperty = new Property<FreefallMode>( FreefallMode.ONE_OBJECT );
@@ -214,12 +269,12 @@ export default class StemScreenView extends ScreenView {
     });
 
     //=================CREATE CIRCLE============================
-    // Lưu vị trí ban đầu vào biến instance
+    let wasDraggedCircle = false; // riêng cho hình tròn
+
     this.draggableCircleInitialPosition = new Vector2( initialX, initialY );
 
-    // Gửi vị trí ban đầu và mặt đất cho Model
-    this.model.setInitialPosition( initialY - radius );
-    this.model.setGroundY( initialY - radius); // Mặt đất là tại initialY
+    this.model.objectA.setInitialPosition( initialY - radius );
+    this.model.setGroundY( initialY - radius);
 
     const dragCircle = new Circle( radius, {
       fill: 'red',
@@ -228,7 +283,6 @@ export default class StemScreenView extends ScreenView {
       cursor: 'pointer'
     });
 
-    // Vùng kéo cho phép: từ trên cùng của bầu trời đến initialY, trong vùng ngang layout
     const dragBounds = Bounds2.rect(
       screenLeft,
       screenTop,
@@ -236,20 +290,26 @@ export default class StemScreenView extends ScreenView {
       initialY
     );
 
-    // Tạo DragListener với closure truy cập dragCircle
-    const dragListener = new DragListener( {
+    const dragListenerCircle = new DragListener({
       translateNode: true,
 
       start: () => {
-        wasDragged = false; // reset mỗi lần bắt đầu
-        this.model.reset();
+        wasDraggedCircle = false;
+        // reset mềm: không đụng vào position cũ
+        this.model.objectA.velocity = 0;
+        this.model.objectA.vMax = 0;
+        this.model.objectA.fallingTime = 0;
+        this.model.objectA.isFalling = false;
+        this.model.objectA.lastHeight = 0;
+
+        // đặt mốc mới khớp với vị trí node hiện tại để không "nhảy"
+        this.model.objectA.setInitialPosition( dragCircle.centerY );
       },
 
       drag: () => {
-        wasDragged = true;
+        wasDraggedCircle = true;
 
-        // cập nhật vị trí
-        if ( !this.model.isFalling ) {
+        if ( !this.model.objectA.isFalling ) {
           dragCircle.centerX = Math.max(
             dragBounds.minX + radius,
             Math.min( dragBounds.maxX - radius, dragCircle.centerX )
@@ -258,43 +318,47 @@ export default class StemScreenView extends ScreenView {
             dragBounds.minY + radius,
             Math.min( dragBounds.maxY - radius, dragCircle.centerY )
           );
-          this.model.setInitialPosition( dragCircle.centerY );
+          this.model.objectA.setInitialPosition( dragCircle.centerY );
         }
       },
 
       end: () => {
-        this.model.setInitialPosition( dragCircle.centerY );
-        // this.model.startFalling();
+        this.model.objectA.setInitialPosition( dragCircle.centerY );
       }
-    } );
+    });
 
-    dragCircle.addInputListener( dragListener );
+    dragCircle.addInputListener( dragListenerCircle );
 
-    dragCircle.addInputListener( {
+    dragCircle.addInputListener({
       up: event => {
-        if ( !wasDragged && !this.model.isFalling ) {
-          this.model.setInitialPosition( dragCircle.centerY );
-          this.model.startFalling();
+        if ( !wasDraggedCircle && !this.model.objectA.isFalling ) {
+          this.model.objectA.setInitialPosition( dragCircle.centerY );
+          this.model.objectA.startFalling();
         }
       }
-    } );
+    });
 
     this.dragCircle = dragCircle;
     this.addChild( dragCircle );
-    //===========================================================
 
     //=================CREATE SQUARE============================
+    let wasDraggedSquare = false; // riêng cho hình vuông
+
     this.draggableSquareInitialPosition = new Vector2( initialX + radius + 50, initialY );
 
+    this.model.objectB.setInitialPosition( initialY - radius );
+    this.model.setGroundY( initialY - radius);
+
     const dragSquare = new Rectangle(
-      Bounds2.rect(0, 0, radius * 2, radius * 2),
+      0, 0, radius * 2, radius * 2,
       {
         fill: 'blue',
-        centerX: initialX + radius + 50,
-        centerY: initialY - radius,
         cursor: 'pointer'
       }
     );
+
+    dragSquare.centerX = initialX + radius + 50;
+    dragSquare.centerY = initialY - radius;
 
     const dragSquareBounds = Bounds2.rect(
       screenLeft,
@@ -303,18 +367,24 @@ export default class StemScreenView extends ScreenView {
       initialY
     );
 
-    const dragSquareListener = new DragListener( {
+    const dragSquareListener = new DragListener({
       translateNode: true,
 
       start: () => {
-        wasDragged = false;
-        this.model.reset();
+        wasDraggedSquare = false;
+        this.model.objectB.velocity = 0;
+        this.model.objectB.vMax = 0;
+        this.model.objectB.fallingTime = 0;
+        this.model.objectB.isFalling = false;
+        this.model.objectB.lastHeight = 0;
+
+        this.model.objectB.setInitialPosition( dragSquare.centerY );
       },
 
       drag: () => {
-        wasDragged = true;
+        wasDraggedSquare = true;
 
-        if ( !this.model.isFalling ) {
+        if ( !this.model.objectB.isFalling ) {
           dragSquare.centerX = Math.max(
             dragSquareBounds.minX + radius,
             Math.min( dragSquareBounds.maxX - radius, dragSquare.centerX )
@@ -323,29 +393,28 @@ export default class StemScreenView extends ScreenView {
             dragSquareBounds.minY + radius,
             Math.min( dragSquareBounds.maxY - radius, dragSquare.centerY )
           );
-          this.model.setInitialPosition( dragSquare.centerY );
+          this.model.objectB.setInitialPosition( dragSquare.centerY );
         }
       },
 
       end: () => {
-        this.model.setInitialPosition( dragSquare.centerY );
+        this.model.objectB.setInitialPosition( dragSquare.centerY );
       }
     });
 
     dragSquare.addInputListener( dragSquareListener );
 
-    dragSquare.addInputListener( {
+    dragSquare.addInputListener({
       up: event => {
-        if ( !wasDragged && !this.model.isFalling ) {
-          this.model.setInitialPosition( dragSquare.centerY );
-          this.model.startFalling();
+        if ( !wasDraggedSquare && !this.model.objectB.isFalling ) {
+          this.model.objectB.setInitialPosition( dragSquare.centerY );
+          this.model.objectB.startFalling();
         }
       }
     });
 
     this.dragSquare = dragSquare;
     this.addChild( dragSquare );
-    //===========================================================
 
 
     //===============RESET BUTTON================================
@@ -376,7 +445,8 @@ export default class StemScreenView extends ScreenView {
     this.dragSquare.centerY = this.draggableSquareInitialPosition.y - radius;
 
     // Cập nhật lại model
-    this.model.setInitialPosition( this.dragCircle.centerY );
+    this.model.objectA.setInitialPosition( this.dragCircle.centerY );
+    this.model.objectB.setInitialPosition( this.dragCircle.centerY );
     this.model.setGroundY( this.draggableCircleInitialPosition.y - radius ); 
     this.model.reset();
     //==============================================================
@@ -386,53 +456,65 @@ export default class StemScreenView extends ScreenView {
    * Steps the view.
    * @param dt - time step, in seconds
    */
-  public override step( dt: number ): void {
-    this.model.step( dt );
+  public override step(dt: number): void {
+  this.model.step(dt);
 
-    // Cập nhật vị trí hình tròn từ model
-    this.dragCircle.centerY = this.model.position;
-    // Cập nhật vị trí hình vuông từ model
-    this.dragSquare.centerY = this.model.position;
+  // Cập nhật vị trí hình tròn từ objectA
+  this.dragCircle.centerY = this.model.objectA.position;
+  // Cập nhật vị trí hình vuông từ objectB
+  this.dragSquare.centerY = this.model.objectB.position;
 
-    // ==================== CẬP NHẬT GIÁ TRỊ s ======================
-    const referenceY = this.draggableCircleInitialPosition.y - radius;
-    const currentY = this.dragCircle.centerY;
-    const s = referenceY - currentY;
+  // ==================== CẬP NHẬT GIÁ TRỊ s ======================
+  const referenceY_A = this.draggableCircleInitialPosition.y - radius;
+  const currentY_A = this.dragCircle.centerY;
+  const s_A = referenceY_A - currentY_A;
+  const sMeters_A = (s_A / 100).toFixed(2);
+  this.sText_A.string = `s(A) = ${sMeters_A} m`;
 
-    // Giả sử mỗi pixel là 1 đơn vị (hoặc bạn có thể chia cho scale nào đó để ra mét)
-    const sMeters = ( s / 100 ).toFixed( 2 ); // ví dụ: 100px = 1m
-    this.sText.string = `s = ${sMeters} m`;
+  const referenceY_B = this.draggableSquareInitialPosition.y - radius;
+  const currentY_B = this.dragSquare.centerY;
+  const s_B = referenceY_B - currentY_B;
+  const sMeters_B = (s_B / 100).toFixed(2);
+  this.sText_B.string = `s(B) = ${sMeters_B} m`;
 
-    //======================Cập nhât giá trị h=======================
-    if ( this.model.isFalling ) {
-      const h = this.model.groundY - this.dragCircle.centerY;
-      this.model.lastHeight = h; // lưu lại trong lúc rơi
-      const hMeters = ( h / 100 ).toFixed( 2 );
-      this.hText.string = `h = ${hMeters} m`;
-    }
-    else {
-      const hMeters = ( this.model.lastHeight / 100 ).toFixed( 2 );
-      this.hText.string = `h = ${hMeters} m`;
-    }
-
-    //======================CẬP NHẬT GIÁ TRỊ v =======================
-    // Lấy vận tốc từ model
-    const v = this.model.velocity;
-    const vMeters = ( v / 100 ).toFixed( 2 ); // giả sử 100px = 1m
-    this.vText.string = `v = ${vMeters} m/s`;
-
-    //======================CẬP NHẬT GIÁ TRỊ vmax =======================
-    // Lấy vận tốc từ model
-    const vmax = this.model.vMax;
-    const vmaxMeters = ( vmax / 100 ).toFixed( 2 ); // giả sử 100px = 1m
-    this.vmaxText.string = `vmax = ${vmaxMeters} m/s`;
-
-    //======================CẬP NHẬT GIÁ TRỊ t =======================
-    //Lấy time từ model
-    const t = this.model.fallingTime;
-    const ts = t.toFixed( 2 );
-    this.tText.string = `t = ${ts} s`;
+  //======================CẬP NHẬT GIÁ TRỊ h=======================
+  if (this.model.objectA.isFalling) {
+    const h_A = this.model.objectA.groundY - this.dragCircle.centerY;
+    this.model.objectA.lastHeight = h_A;
+    this.hText_A.string = `h(A) = ${(h_A / 100).toFixed(2)} m`;
+  } else {
+    this.hText_A.string = `h(A) = ${(this.model.objectA.lastHeight / 100).toFixed(2)} m`;
   }
+
+  if (this.model.objectB.isFalling) {
+    const h_B = this.model.objectB.groundY - this.dragSquare.centerY;
+    this.model.objectB.lastHeight = h_B;
+    this.hText_B.string = `h(B) = ${(h_B / 100).toFixed(2)} m`;
+  } else {
+    this.hText_B.string = `h(B) = ${(this.model.objectB.lastHeight / 100).toFixed(2)} m`;
+  }
+
+  //======================CẬP NHẬT GIÁ TRỊ v =======================
+  const vMeters_A = (this.model.objectA.velocity / 100).toFixed(2);
+  this.vText_A.string = `v(A) = ${vMeters_A} m/s`;
+
+  const vMeters_B = (this.model.objectB.velocity / 100).toFixed(2);
+  this.vText_B.string = `v(B) = ${vMeters_B} m/s`;
+
+  //======================CẬP NHẬT GIÁ TRỊ vmax =======================
+  const vmaxMeters_A = (this.model.objectA.vMax / 100).toFixed(2);
+  this.vmaxText_A.string = `vmax(A) = ${vmaxMeters_A} m/s`;
+
+  const vmaxMeters_B = (this.model.objectB.vMax / 100).toFixed(2);
+  this.vmaxText_B.string = `vmax(B) = ${vmaxMeters_B} m/s`;
+
+  //======================CẬP NHẬT GIÁ TRỊ t =======================
+  const ts_A = this.model.objectA.fallingTime.toFixed(2);
+  this.tText_A.string = `t(A) = ${ts_A} s`;
+
+  const ts_B = this.model.objectB.fallingTime.toFixed(2);
+  this.tText_B.string = `t(B) = ${ts_B} s`;
+}
 }
 
 stem.register( 'StemScreenView', StemScreenView );
