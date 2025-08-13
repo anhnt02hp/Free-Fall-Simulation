@@ -9,6 +9,7 @@
 import TModel from '../../../../joist/js/TModel.js';
 import PickRequired from '../../../../phet-core/js/types/PickRequired.js';
 import { PhetioObjectOptions } from '../../../../tandem/js/PhetioObject.js';
+import Property from '../../../../axon/js/Property.js';
 import stem from '../../stem.js';
 
 type SelfOptions = {
@@ -17,7 +18,18 @@ type SelfOptions = {
 
 type StemModelOptions = SelfOptions & PickRequired<PhetioObjectOptions, 'tandem'>;
 
+export enum FreefallMode {
+  ONE_OBJECT,
+  TWO_OBJECTS
+}
+
 export default class StemModel implements TModel {
+
+  // Chế độ rơi và hiển thị vật thể
+  public freefallModeProperty = new Property<FreefallMode>( FreefallMode.ONE_OBJECT );
+  public objectAVisibleProperty = new Property<boolean>( true );
+  public objectBVisibleProperty = new Property<boolean>( false );
+
   // Thuộc tính trạng thái của vật thể
   public position: number; // vị trí theo trục Y
   public velocity: number; // vận tốc
@@ -44,6 +56,18 @@ export default class StemModel implements TModel {
     this.fallingTime = 0;
     this.groundY = 0; // sẽ cập nhật từ View sau
     this.isFalling = false;
+
+    // Link chế độ rơi với hiển thị vật thể
+    this.freefallModeProperty.link( mode => {
+      if ( mode === FreefallMode.ONE_OBJECT ) {
+        this.objectAVisibleProperty.value = true;
+        this.objectBVisibleProperty.value = false;
+      }
+      else {
+        this.objectAVisibleProperty.value = true;
+        this.objectBVisibleProperty.value = true;
+      }
+    });
   }
 
   // Gán vị trí ban đầu từ View

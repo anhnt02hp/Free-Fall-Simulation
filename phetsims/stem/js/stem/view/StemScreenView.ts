@@ -36,6 +36,9 @@ export default class StemScreenView extends ScreenView {
   private readonly model: StemModel;
   private readonly draggableCircleInitialPosition = { x: 0, y: 0 };
   private readonly dragCircle: Circle;
+
+  private readonly draggableSquareInitialPosition = { x: 0, y: 0 };
+  private readonly dragSquare: Rectangle;
   private readonly sText: Text;
   private hText!: Text;
   private vText!: Text;
@@ -63,7 +66,7 @@ export default class StemScreenView extends ScreenView {
     const groundHeight = screenHeight * 0.05;
     //===================================================
 
-    // Vị trí ban đầu (đặt bóng nằm giữa phần mặt đất)
+    // Vị trí ban đầu (đặt object nằm giữa phần mặt đất)
     const initialX = this.layoutBounds.centerX;
     const initialY = this.layoutBounds.top + skyHeight + groundHeight / 100;
 
@@ -280,6 +283,71 @@ export default class StemScreenView extends ScreenView {
     this.addChild( dragCircle );
     //===========================================================
 
+    //=================CREATE SQUARE============================
+    this.draggableSquareInitialPosition = new Vector2( initialX + radius + 50, initialY );
+
+    const dragSquare = new Rectangle(
+      Bounds2.rect(0, 0, radius * 2, radius * 2),
+      {
+        fill: 'blue',
+        centerX: initialX + radius + 50,
+        centerY: initialY - radius,
+        cursor: 'pointer'
+      }
+    );
+
+    const dragSquareBounds = Bounds2.rect(
+      screenLeft,
+      screenTop,
+      screenRight,
+      initialY
+    );
+
+    const dragSquareListener = new DragListener( {
+      translateNode: true,
+
+      start: () => {
+        wasDragged = false;
+        this.model.reset();
+      },
+
+      drag: () => {
+        wasDragged = true;
+
+        if ( !this.model.isFalling ) {
+          dragSquare.centerX = Math.max(
+            dragSquareBounds.minX + radius,
+            Math.min( dragSquareBounds.maxX - radius, dragSquare.centerX )
+          );
+          dragSquare.centerY = Math.max(
+            dragSquareBounds.minY + radius,
+            Math.min( dragSquareBounds.maxY - radius, dragSquare.centerY )
+          );
+          this.model.setInitialPosition( dragSquare.centerY );
+        }
+      },
+
+      end: () => {
+        this.model.setInitialPosition( dragSquare.centerY );
+      }
+    });
+
+    dragSquare.addInputListener( dragSquareListener );
+
+    dragSquare.addInputListener( {
+      up: event => {
+        if ( !wasDragged && !this.model.isFalling ) {
+          this.model.setInitialPosition( dragSquare.centerY );
+          this.model.startFalling();
+        }
+      }
+    });
+
+    this.dragSquare = dragSquare;
+    this.addChild( dragSquare );
+    //===========================================================
+
+
     //===============RESET BUTTON================================
     const resetAllButton = new ResetAllButton( {
       listener: () => {
@@ -303,6 +371,10 @@ export default class StemScreenView extends ScreenView {
     this.dragCircle.centerX = this.draggableCircleInitialPosition.x;
     this.dragCircle.centerY = this.draggableCircleInitialPosition.y - radius;
 
+    //======RESET SQUARE POSITION================================
+    this.dragSquare.centerX = this.draggableSquareInitialPosition.x;
+    this.dragSquare.centerY = this.draggableSquareInitialPosition.y - radius;
+
     // Cập nhật lại model
     this.model.setInitialPosition( this.dragCircle.centerY );
     this.model.setGroundY( this.draggableCircleInitialPosition.y - radius ); 
@@ -319,6 +391,8 @@ export default class StemScreenView extends ScreenView {
 
     // Cập nhật vị trí hình tròn từ model
     this.dragCircle.centerY = this.model.position;
+    // Cập nhật vị trí hình vuông từ model
+    this.dragSquare.centerY = this.model.position;
 
     // ==================== CẬP NHẬT GIÁ TRỊ s ======================
     const referenceY = this.draggableCircleInitialPosition.y - radius;
