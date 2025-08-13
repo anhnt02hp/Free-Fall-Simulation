@@ -132,11 +132,11 @@ export default class StemModel implements TModel {
 
   public constructor(options: StemModelOptions) {
     const gravity = 980; // px/s²
-    // Vật A nhẹ (ví dụ mass = 1)
-    this.objectA = new FallingObject(gravity, 1, 2.5); 
+    // Vật A 
+    this.objectA = new FallingObject(gravity, 0.2, 0.005); 
 
-    // Vật B nặng hơn (ví dụ mass = 3)
-    this.objectB = new FallingObject(gravity, 3, 2.5); 
+    // Vật B 
+    this.objectB = new FallingObject(gravity, 3, 0.005); 
 
     // Xử lý khi đổi chế độ
     this.freefallModeProperty.link(mode => {
