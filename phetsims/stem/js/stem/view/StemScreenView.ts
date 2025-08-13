@@ -269,15 +269,15 @@ export default class StemScreenView extends ScreenView {
     });
     //========================================================================
 
-    //=================CREATE CIRCLE============================
-    let wasDraggedCircle = false; // riêng cho hình tròn
+    // ================== CREATE CIRCLE (objectA) ===================
+    let wasDraggedCircle = false;
 
-    this.draggableCircleInitialPosition = new Vector2( initialX, initialY );
+    this.draggableCircleInitialPosition = new Vector2(initialX, initialY);
 
-    this.model.objectA.setInitialPosition( initialY - radius );
-    this.model.setGroundY( initialY - radius);
+    this.model.objectA.setInitialPosition(initialY - radius);
+    this.model.setGroundY(initialY - radius);
 
-    const dragCircle = new Circle( radius, {
+    const dragCircle = new Circle(radius, {
       fill: 'red',
       centerX: initialX,
       centerY: initialY - radius,
@@ -293,55 +293,55 @@ export default class StemScreenView extends ScreenView {
 
     const dragListenerCircle = new DragListener({
       translateNode: true,
-
       start: () => {
         wasDraggedCircle = false;
-        // reset mềm: không đụng vào position cũ
-        this.model.objectA.softResetAt( dragCircle.centerY );
+        // Reset "mềm" giữ vị trí hiện tại để tránh nhảy lên cao
+        this.model.objectA.softResetAt(dragCircle.centerY);
       },
-
       drag: () => {
         wasDraggedCircle = true;
-
-        if ( !this.model.objectA.isFalling ) {
-          dragCircle.centerX = Math.max(
-            dragBounds.minX + radius,
-            Math.min( dragBounds.maxX - radius, dragCircle.centerX )
+        if (!this.model.objectA.isFalling) {
+          dragCircle.centerX = Math.min(
+            dragBounds.maxX - radius,
+            Math.max(dragBounds.minX + radius, dragCircle.centerX)
           );
-          dragCircle.centerY = Math.max(
-            dragBounds.minY + radius,
-            Math.min( dragBounds.maxY - radius, dragCircle.centerY )
+          dragCircle.centerY = Math.min(
+            dragBounds.maxY - radius,
+            Math.max(dragBounds.minY + radius, dragCircle.centerY)
           );
-          this.model.objectA.setInitialPosition( dragCircle.centerY );
+          this.model.objectA.setInitialPosition(dragCircle.centerY);
         }
       },
-
       end: () => {
-        this.model.objectA.setInitialPosition( dragCircle.centerY );
+        this.model.objectA.setInitialPosition(dragCircle.centerY);
       }
     });
 
-    dragCircle.addInputListener( dragListenerCircle );
+    dragCircle.addInputListener(dragListenerCircle);
 
     dragCircle.addInputListener({
-      up: event => {
-        if ( !wasDraggedCircle && !this.model.objectA.isFalling ) {
-          this.model.objectA.setInitialPosition( dragCircle.centerY );
+      up: () => {
+        if (!wasDraggedCircle && !this.model.objectA.isFalling) {
           this.model.objectA.startFalling();
         }
       }
     });
 
     this.dragCircle = dragCircle;
-    this.addChild( dragCircle );
+    this.addChild(dragCircle);
 
-    //=================CREATE SQUARE============================
-    let wasDraggedSquare = false; // riêng cho hình vuông
+    // Link visibility
+    // this.model.objectAVisibleProperty.link( visible => {
+    //   this.dragCircle.visible = visible;
+    // });
 
-    this.draggableSquareInitialPosition = new Vector2( initialX + radius + 50, initialY );
+    // ================== CREATE SQUARE (objectB) ===================
+    let wasDraggedSquare = false;
 
-    this.model.objectB.setInitialPosition( initialY - radius );
-    this.model.setGroundY( initialY - radius);
+    this.draggableSquareInitialPosition = new Vector2(initialX + radius + 50, initialY);
+
+    this.model.objectB.setInitialPosition(initialY - radius);
+    this.model.setGroundY(initialY - radius);
 
     const dragSquare = new Rectangle(
       0, 0, radius * 2, radius * 2,
@@ -363,47 +363,45 @@ export default class StemScreenView extends ScreenView {
 
     const dragSquareListener = new DragListener({
       translateNode: true,
-
       start: () => {
         wasDraggedSquare = false;
-        this.model.objectB.softResetAt( dragSquare.centerY );
+        this.model.objectB.softResetAt(dragSquare.centerY);
       },
-
       drag: () => {
         wasDraggedSquare = true;
-
-        if ( !this.model.objectB.isFalling ) {
-          dragSquare.centerX = Math.max(
-            dragSquareBounds.minX + radius,
-            Math.min( dragSquareBounds.maxX - radius, dragSquare.centerX )
+        if (!this.model.objectB.isFalling) {
+          dragSquare.centerX = Math.min(
+            dragSquareBounds.maxX - radius,
+            Math.max(dragSquareBounds.minX + radius, dragSquare.centerX)
           );
-          dragSquare.centerY = Math.max(
-            dragSquareBounds.minY + radius,
-            Math.min( dragSquareBounds.maxY - radius, dragSquare.centerY )
+          dragSquare.centerY = Math.min(
+            dragSquareBounds.maxY - radius,
+            Math.max(dragSquareBounds.minY + radius, dragSquare.centerY)
           );
-          this.model.objectB.setInitialPosition( dragSquare.centerY );
+          this.model.objectB.setInitialPosition(dragSquare.centerY);
         }
       },
-
       end: () => {
-        this.model.objectB.setInitialPosition( dragSquare.centerY );
+        this.model.objectB.setInitialPosition(dragSquare.centerY);
       }
     });
 
-    dragSquare.addInputListener( dragSquareListener );
+    dragSquare.addInputListener(dragSquareListener);
 
     dragSquare.addInputListener({
-      up: event => {
-        if ( !wasDraggedSquare && !this.model.objectB.isFalling ) {
-          this.model.objectB.setInitialPosition( dragSquare.centerY );
+      up: () => {
+        if (!wasDraggedSquare && !this.model.objectB.isFalling) {
           this.model.objectB.startFalling();
         }
       }
     });
 
     this.dragSquare = dragSquare;
-    this.addChild( dragSquare );
+    this.addChild(dragSquare);
 
+    // this.model.objectBVisibleProperty.link( visible => {
+    //   this.dragSquare.visible = visible;
+    // });
 
     //===============RESET BUTTON================================
     const resetAllButton = new ResetAllButton( {

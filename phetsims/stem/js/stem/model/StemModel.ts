@@ -54,15 +54,18 @@ class FallingObject {
     this.hasLanded = false;
   }
 
+  // Reset nhưng cập nhật lại initialY theo vị trí mới
   public softResetAt(y: number): void {
     this.velocity = 0;
     this.vMax = 0;
     this.fallingTime = 0;
     this.isFalling = false;
     this.lastHeight = 0;
-    this.setInitialPosition(y); // cũng cập nhật initialY = y
+    this.hasLanded = false;
+    this.setInitialPosition(y);
   }
 
+  // Reset về đúng initialY ban đầu
   public reset(): void {
     this.velocity = 0;
     this.fallingTime = 0;
@@ -121,10 +124,12 @@ export default class StemModel implements TModel {
     this.objectA = new FallingObject(gravity);
     this.objectB = new FallingObject(gravity);
 
+    // Xử lý khi đổi chế độ
     this.freefallModeProperty.link(mode => {
       if (mode === FreefallMode.ONE_OBJECT) {
         this.objectAVisibleProperty.value = true;
         this.objectBVisibleProperty.value = false;
+        this.objectB.reset(); // reset objectB để tránh lưu state cũ
       } else {
         this.objectAVisibleProperty.value = true;
         this.objectBVisibleProperty.value = true;
@@ -148,14 +153,14 @@ export default class StemModel implements TModel {
     this.objectB.reset();
   }
 
-  // reset riêng objectA
+  // reset riêng objectA, giữ nguyên initialY hiện tại
   public resetObjectA(): void {
-    this.objectA.reset();
+    this.objectA.softResetAt(this.objectA.position);
   }
 
-  // reset riêng objectB
+  // reset riêng objectB, giữ nguyên initialY hiện tại
   public resetObjectB(): void {
-    this.objectB.reset();
+    this.objectB.softResetAt(this.objectB.position);
   }
 
   public step(dt: number): void {
@@ -163,6 +168,7 @@ export default class StemModel implements TModel {
     this.objectB.step(dt);
   }
 }
+
 
 
 stem.register( 'StemModel', StemModel );
