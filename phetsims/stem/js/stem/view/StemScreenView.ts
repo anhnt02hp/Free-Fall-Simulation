@@ -21,6 +21,8 @@ import Vector2 from '../../../../dot/js/Vector2.js';
 import Line from '../../../../scenery/js/nodes/Line.js';
 import PhetFont from '../../../../scenery-phet/js/PhetFont.js';
 import Text from '../../../../scenery/js/nodes/Text.js';
+import TextPushButton from '../../../../sun/js/buttons/TextPushButton.js';
+import Property from '../../../../axon/js/Property.js';
 
 type SelfOptions = {
  //TODO add options that are specific to StemScreenView here
@@ -174,6 +176,24 @@ export default class StemScreenView extends ScreenView {
     this.addChild(this.tText);    
 
     //===============================================================
+
+    // Nút bật/tắt lực cản không khí
+    const airButtonLabelProperty = new Property( 'Air Resistance: OFF' );
+
+    const airToggleButton = new TextPushButton( airButtonLabelProperty, {
+      font: new PhetFont( 14 ),
+      baseColor: '#f4c542',
+      listener: () => {
+        const newState = !this.model.airResistanceEnabled;
+        this.model.setAirResistance( newState );
+        airButtonLabelProperty.value = `Air Resistance: ${newState ? 'ON' : 'OFF'}`;
+      }
+    });
+
+    // Đặt vị trí nút (ví dụ bên dưới ô thông tin)
+    airToggleButton.left = rectX;
+    airToggleButton.top = myRoundedRect.bottom + 10;
+    this.addChild( airToggleButton );
 
     //=================CREATE CIRCLE============================
     // Lưu vị trí ban đầu vào biến instance

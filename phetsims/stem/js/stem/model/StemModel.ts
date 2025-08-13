@@ -30,6 +30,14 @@ export default class StemModel implements TModel {
   public lastHeight: number = 0;
   private hasLanded: boolean = false;
 
+  public airResistanceEnabled: boolean = false; // bật/tắt lực cản
+  public airResistanceCoefficient: number = 2.5; // hệ số lực cản (tùy chỉnh)
+
+  // Bật/tắt lực cản
+  public setAirResistance(enabled: boolean): void {
+    this.airResistanceEnabled = enabled;
+  }
+
   public constructor( providedOptions: StemModelOptions ) {
     this.position = 0;
     this.velocity = 0;
@@ -72,12 +80,26 @@ export default class StemModel implements TModel {
    */
   public step( dt: number ): void {
     if ( this.isFalling ) {
-      this.position += this.velocity * dt + 0.5 * this.gravity * dt * dt;
-      this.velocity += this.gravity * dt;
-      this.fallingTime = Math.sqrt( 2 * ( this.position - this.initialY ) / this.gravity );
+      if ( this.airResistanceEnabled ) {
+        // Lực cản tuyến tính: a = g - k*v
+        const drag = this.airResistanceCoefficient * this.velocity;
+        this.position += this.velocity * dt + 0.5 * ( this.gravity - drag ) * dt * dt;
+        this.velocity += ( this.gravity - drag ) * dt;
+      }
+      else {
+        // Không có lực cản
+        this.position += this.velocity * dt + 0.5 * this.gravity * dt * dt;
+        this.velocity += this.gravity * dt;
+      }
+
+      // Giữ nguyên công thức tính t
+      this.fallingTime = Math.sqrt(
+        2 * ( this.position - this.initialY ) / this.gravity
+      );
+
       this.vMax = Math.max( this.vMax, this.velocity );
-      
-      // Nếu chạm đất thì dừng lại
+
+      // Chạm đất
       if ( this.position >= this.groundY ) {
         this.position = this.groundY;
         this.velocity = 0;
