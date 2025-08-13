@@ -253,20 +253,6 @@ export default class StemScreenView extends ScreenView {
     this.addChild( airToggleButton );
     //==================================================================
 
-
-    // ================= MODE RADIO BUTTON (1 vật / 2 vật) =================
-    const freefallModeProperty = new Property<FreefallMode>( FreefallMode.ONE_OBJECT );
-
-    const modeRadioGroup = new FreefallModeRadioButtonGroup( freefallModeProperty );
-    modeRadioGroup.left = airToggleButton.left;
-    modeRadioGroup.top = airToggleButton.bottom + 10;
-
-    this.addChild( modeRadioGroup );
-
-    // Lắng nghe khi đổi chế độ để cập nhật model
-    freefallModeProperty.link( mode => {
-      //this.model.setFreefallMode( mode ); // bạn sẽ cần viết hàm này trong StemModel
-    });
     //========================================================================
 
     // ================== CREATE CIRCLE (objectA) ===================
@@ -330,11 +316,7 @@ export default class StemScreenView extends ScreenView {
     this.dragCircle = dragCircle;
     this.addChild(dragCircle);
 
-    // Link visibility
-    // this.model.objectAVisibleProperty.link( visible => {
-    //   this.dragCircle.visible = visible;
-    // });
-
+    
     // ================== CREATE SQUARE (objectB) ===================
     let wasDraggedSquare = false;
 
@@ -398,10 +380,30 @@ export default class StemScreenView extends ScreenView {
 
     this.dragSquare = dragSquare;
     this.addChild(dragSquare);
+    //=============================================================
 
-    // this.model.objectBVisibleProperty.link( visible => {
-    //   this.dragSquare.visible = visible;
-    // });
+    // ================= MODE RADIO BUTTON (1 vật / 2 vật) =================
+    const freefallModeProperty = new Property<FreefallMode>( FreefallMode.ONE_OBJECT );
+
+    const modeRadioGroup = new FreefallModeRadioButtonGroup( freefallModeProperty );
+    modeRadioGroup.left = airToggleButton.left;
+    modeRadioGroup.top = airToggleButton.bottom + 10;
+
+    this.addChild( modeRadioGroup );
+
+    // Link với model để cập nhật chế độ
+    freefallModeProperty.link( mode => {
+      this.model.freefallModeProperty.value = mode;
+    });
+
+    // Link visibility của objectA và objectB với property trong model
+    this.model.objectAVisibleProperty.link( visible => {
+      this.dragCircle.visible = visible;
+    });
+    this.model.objectBVisibleProperty.link( visible => {
+      this.dragSquare.visible = visible;
+    });
+    //=====================================================================
 
     //===============RESET BUTTON================================
     const resetAllButton = new ResetAllButton( {

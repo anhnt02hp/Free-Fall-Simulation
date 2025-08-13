@@ -129,7 +129,6 @@ export default class StemModel implements TModel {
       if (mode === FreefallMode.ONE_OBJECT) {
         this.objectAVisibleProperty.value = true;
         this.objectBVisibleProperty.value = false;
-        this.objectB.reset(); // reset objectB để tránh lưu state cũ
       } else {
         this.objectAVisibleProperty.value = true;
         this.objectBVisibleProperty.value = true;
