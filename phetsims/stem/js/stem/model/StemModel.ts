@@ -31,10 +31,15 @@ class FallingObject {
   public groundY = 0;
   public airResistanceEnabled = false;
 
+  public mass: number;
+
   public constructor(
     public gravity: number,
-    public airResistanceCoefficient: number = 2.5
-  ) {}
+    mass: number = 1,
+    public airResistanceCoefficient: number = 0.5
+  ) {
+    this.mass = mass;
+  }
 
   public setInitialPosition(y: number): void {
     this.position = y;
@@ -78,21 +83,27 @@ class FallingObject {
 
   public step(dt: number): void {
     if (!this.isFalling) return;
+    
+    let acceleration: number;
 
     if (this.airResistanceEnabled) {
-      const drag = this.airResistanceCoefficient * this.velocity;
-      this.position += this.velocity * dt + 0.5 * (this.gravity - drag) * dt * dt;
-      this.velocity += (this.gravity - drag) * dt;
+      const drag = this.airResistanceCoefficient * this.velocity * Math.abs(this.velocity);
+      acceleration = this.gravity - drag / this.mass;
     } else {
-      this.position += this.velocity * dt + 0.5 * this.gravity * dt * dt;
-      this.velocity += this.gravity * dt;
+      acceleration = this.gravity;
     }
 
-    this.fallingTime = Math.sqrt(
-      2 * (this.position - this.initialY) / this.gravity
-    );
+    // Cập nhật vị trí và vận tốc
+    this.position += this.velocity * dt + 0.5 * acceleration * dt * dt;
+    this.velocity += acceleration * dt;
+
+    // Cộng dồn thời gian rơi thực tế
+    this.fallingTime += dt;
+
+    // Cập nhật vận tốc cực đại
     this.vMax = Math.max(this.vMax, this.velocity);
 
+    // Kiểm tra chạm đất
     if (this.position >= this.groundY) {
       this.position = this.groundY;
       this.velocity = 0;
@@ -120,9 +131,12 @@ export default class StemModel implements TModel {
   public objectB: FallingObject;
 
   public constructor(options: StemModelOptions) {
-    const gravity = 1000; // px/s²
-    this.objectA = new FallingObject(gravity);
-    this.objectB = new FallingObject(gravity);
+    const gravity = 980; // px/s²
+    // Vật A nhẹ (ví dụ mass = 1)
+    this.objectA = new FallingObject(gravity, 1, 2.5); 
+
+    // Vật B nặng hơn (ví dụ mass = 3)
+    this.objectB = new FallingObject(gravity, 3, 2.5); 
 
     // Xử lý khi đổi chế độ
     this.freefallModeProperty.link(mode => {
