@@ -36,7 +36,7 @@ class FallingObject {
   public constructor(
     public gravity: number,
     mass: number = 1,
-    public airResistanceCoefficient: number = 0.5
+    public airResistanceCoefficient: number = 1
   ) {
     this.mass = mass;
   }
