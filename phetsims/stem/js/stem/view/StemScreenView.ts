@@ -231,6 +231,17 @@ export default class StemScreenView extends ScreenView {
     this.addChild(this.vmaxText_B);
     this.addChild(this.tText_B);
 
+    // Link visibility của info box B
+    this.model.objectBVisibleProperty.link( visible => {
+      infoBoxB.visible = visible;
+      titleText_B.visible = visible;
+      this.sText_B.visible = visible;
+      this.hText_B.visible = visible;
+      this.vText_B.visible = visible;
+      this.vmaxText_B.visible = visible;
+      this.tText_B.visible = visible;
+    });
+
 
     //=====================AIR RESISTANCE============================
     const airButtonLabelProperty = new Property(
@@ -316,7 +327,7 @@ export default class StemScreenView extends ScreenView {
     this.dragCircle = dragCircle;
     this.addChild(dragCircle);
 
-    
+
     // ================== CREATE SQUARE (objectB) ===================
     let wasDraggedSquare = false;
 
