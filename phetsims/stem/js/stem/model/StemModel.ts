@@ -54,6 +54,15 @@ class FallingObject {
     this.hasLanded = false;
   }
 
+  public softResetAt(y: number): void {
+    this.velocity = 0;
+    this.vMax = 0;
+    this.fallingTime = 0;
+    this.isFalling = false;
+    this.lastHeight = 0;
+    this.setInitialPosition(y); // cũng cập nhật initialY = y
+  }
+
   public reset(): void {
     this.velocity = 0;
     this.fallingTime = 0;

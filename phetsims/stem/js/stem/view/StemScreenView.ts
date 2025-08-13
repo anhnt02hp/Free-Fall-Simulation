@@ -267,6 +267,7 @@ export default class StemScreenView extends ScreenView {
     freefallModeProperty.link( mode => {
       //this.model.setFreefallMode( mode ); // bạn sẽ cần viết hàm này trong StemModel
     });
+    //========================================================================
 
     //=================CREATE CIRCLE============================
     let wasDraggedCircle = false; // riêng cho hình tròn
@@ -296,14 +297,7 @@ export default class StemScreenView extends ScreenView {
       start: () => {
         wasDraggedCircle = false;
         // reset mềm: không đụng vào position cũ
-        this.model.objectA.velocity = 0;
-        this.model.objectA.vMax = 0;
-        this.model.objectA.fallingTime = 0;
-        this.model.objectA.isFalling = false;
-        this.model.objectA.lastHeight = 0;
-
-        // đặt mốc mới khớp với vị trí node hiện tại để không "nhảy"
-        this.model.objectA.setInitialPosition( dragCircle.centerY );
+        this.model.objectA.softResetAt( dragCircle.centerY );
       },
 
       drag: () => {
@@ -372,13 +366,7 @@ export default class StemScreenView extends ScreenView {
 
       start: () => {
         wasDraggedSquare = false;
-        this.model.objectB.velocity = 0;
-        this.model.objectB.vMax = 0;
-        this.model.objectB.fallingTime = 0;
-        this.model.objectB.isFalling = false;
-        this.model.objectB.lastHeight = 0;
-
-        this.model.objectB.setInitialPosition( dragSquare.centerY );
+        this.model.objectB.softResetAt( dragSquare.centerY );
       },
 
       drag: () => {
