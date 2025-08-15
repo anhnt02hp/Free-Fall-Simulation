@@ -50,7 +50,7 @@ export default class EnviromentBox extends Node {
         {value: 'Moon' as const, 
         createNode: () => new Text('Moon', {font: new PhetFont(12)})}
     ]
-    const selectedEnvProperty = new Property('Earth');
+    const selectedEnvProperty = new Property<'Earth' | 'Mars' | 'Moon'>('Earth');
 
     const comboEnv = new ComboBox(selectedEnvProperty, envOptions, EnvBox, {
         listPosition: 'below',
@@ -62,9 +62,17 @@ export default class EnviromentBox extends Node {
     comboEnv.top = EnvBox.top + 5;
     this.addChild(comboEnv)
 
-    selectedEnvProperty.link(EnvName => {
+    const currentEnvText = new Text('', {
+        font: new PhetFont(14),
+        fill: 'black'
+    });
+    currentEnvText.left = EnvBox.left + 5;
+    currentEnvText.top = EnvBox.top + 5;
+    this.addChild(currentEnvText)
+
+    selectedEnvProperty.link((envName: 'Earth' | 'Mars' | 'Moon') => {
         currentEnvText.string = `Selected: ${envName}`;
-        environment.setEnvironment(EnvName);
+        environment.setEnvironment(envName);
     });
 
 }
