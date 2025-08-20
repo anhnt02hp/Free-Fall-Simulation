@@ -7,20 +7,22 @@ import ComboBox from '../../../../sun/js/ComboBox.js';
 import Node from '../../../../scenery/js/nodes/Node.js';
 import StemScreenView from './StemScreenView.js';
 import stem from '../../stem.js';
+import Environment from '../model/EnvironmentChange.js';
 
 
 
 export default class EnviromentBox extends Node {
-    constructor(infoBoxA: Bounds2, environment: Environment) {
+    constructor(infoBoxA: Rectangle, environment: Environment) {
         super();
-//--------Kích thước EnviromentBox-------//
-    const BoxWidth = 200;
-    const BoxHeight = 200;
-    const cornerRadius = 10;
 
-//------- Vị trí EnviromentBox --------(trên)
+//-------- Vị trí EnviromentBox --------//
     const EnvBox_X = infoBoxA.right + 10;
     const EnvBox_Y = infoBoxA.top;
+
+//-------- Kích thước EnviromentBox --------//
+    const BoxWidth =  155;
+    const BoxHeight = 200;
+    const cornerRadius = 10;
 
 //-------Tạo EnvironmentBox-------//
     const EnvBox = new Rectangle(
@@ -63,21 +65,5 @@ export default class EnviromentBox extends Node {
     comboEnv.left = EnvBox.left + 10;
     comboEnv.top = EnvBox.top + 5;
     this.addChild(comboEnv)
-
-    const currentEnvText = new Text('', {
-        font: new PhetFont(14),
-        fill: 'black'
-    });
-    currentEnvText.left = EnvBox.left + 5;
-    currentEnvText.top = EnvBox.top + 5;
-    this.addChild(currentEnvText)
-
-    selectedEnvProperty.link((envName: 'Earth' | 'Mars' | 'Moon') => {
-        currentEnvText.string = `Selected: ${envName}`;
-        environment.setEnvironment(envName);
-    });
-
 }
 }
-
-stem.register( 'StemScreenView', StemScreenView );
