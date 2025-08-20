@@ -23,6 +23,8 @@ import Text from '../../../../scenery/js/nodes/Text.js';
 import TextPushButton from '../../../../sun/js/buttons/TextPushButton.js';
 import Property from '../../../../axon/js/Property.js';
 import FreefallModeRadioButtonGroup, { FreefallMode } from './FreefallModeRadioButtonGroup.js';
+import EnvironmentBox from '../view/EnvironmentBox.js';
+import Environment from '../model/EnvironmentChange.js';
 
 type SelfOptions = {
  //TODO add options that are specific to StemScreenView here
@@ -31,6 +33,8 @@ type SelfOptions = {
 type StemScreenViewOptions = SelfOptions & ScreenViewOptions;
 
 const radius = 15;
+
+const environment = new Environment();
 
 export default class StemScreenView extends ScreenView {
   private readonly model: StemModel;
@@ -193,6 +197,10 @@ export default class StemScreenView extends ScreenView {
     this.addChild(this.vText_A);
     this.addChild(this.vmaxText_A);
     this.addChild(this.tText_A);
+
+    //============ ENVIRONMENT BOX ============================
+    const envBox = new EnvironmentBox(infoBoxA, environment);
+    this.addChild(envBox);
 
     //==========INFORMATION BOX B=====================================
     // Vị trí box B (dưới box A)
