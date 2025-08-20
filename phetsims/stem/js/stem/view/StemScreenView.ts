@@ -41,6 +41,10 @@ export default class StemScreenView extends ScreenView {
   private readonly draggableCircleInitialPosition = { x: 0, y: 0 };
   private readonly dragCircle: Circle;
 
+  //SKY & GROUND
+  private sky: Rectangle;
+  private ground: Rectangle;
+
   private readonly draggableSquareInitialPosition = { x: 0, y: 0 };
   private readonly dragSquare: Rectangle;
   //================= Object A =================
@@ -85,20 +89,20 @@ export default class StemScreenView extends ScreenView {
 
     // ================== BACKGROUND SKY AND GROUND ======================
     // Bầu trời (95% chiều cao màn hình)
-    const sky = new Rectangle( 0, 0, screenWidth, skyHeight, {
+    this.sky = new Rectangle( 0, 0, screenWidth, skyHeight, {
       fill: '#dbf3fa',
       left: screenLeft,
       top: screenTop
     } );
-    this.addChild( sky );
+    this.addChild( this.sky );
 
     // Mặt đất (5% chiều cao màn hình)
-    const ground = new Rectangle( 0, 0, screenWidth, groundHeight, {
+    this.ground = new Rectangle( 0, 0, screenWidth, groundHeight, {
       fill: '#77dd77',
       left: screenLeft,
       top: screenTop + skyHeight
     } );
-    this.addChild( ground );
+    this.addChild( this.ground );
     // ===================================================================
 
     //=================CREATE REFERENCE LINE============================
@@ -199,7 +203,22 @@ export default class StemScreenView extends ScreenView {
     this.addChild(this.tText_A);
 
     //============ ENVIRONMENT BOX ============================
-    const envBox = new EnvironmentBox(infoBoxA, environment);
+    const envBox = new EnvironmentBox(infoBoxA, environment, (envName) => {
+      switch (envName) {
+        case 'Earth':
+          this.sky.fill = '#dbf3fa';
+          this.ground.fill = '#77dd77';
+          break;
+        case 'Mars':
+          this.sky.fill = '#ffe2e1';
+          this.ground.fill = '#ff9933';
+          break;
+        case 'Moon':
+          this.sky.fill = '#a9a9a9';
+          this.ground.fill = '#4f4f4f';
+          break;
+      }
+    });
     this.addChild(envBox);
 
     //==========INFORMATION BOX B=====================================

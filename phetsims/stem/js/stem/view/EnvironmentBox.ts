@@ -12,58 +12,71 @@ import Environment from '../model/EnvironmentChange.js';
 
 
 export default class EnviromentBox extends Node {
-    constructor(infoBoxA: Rectangle, environment: Environment) {
+
+    private environment: Environment;
+    private updateColorsCallback: (env: 'Earth' | 'Mars' | 'Moon') => void;
+
+    constructor(infoBoxA: Rectangle, environment: Environment, updateColorsCallback: (env: 'Earth' | 'Mars' | 'Moon') => void) {
         super();
+        this.environment = environment;
+        this.updateColorsCallback = updateColorsCallback;
 
-//-------- Vị trí EnviromentBox --------//
-    const EnvBox_X = infoBoxA.right + 10;
-    const EnvBox_Y = infoBoxA.top;
+        //-------- Vị trí EnviromentBox --------//
+        const EnvBox_X = infoBoxA.right + 10;
+        const EnvBox_Y = infoBoxA.top;
 
-//-------- Kích thước EnviromentBox --------//
-    const BoxWidth =  155;
-    const BoxHeight = 200;
-    const cornerRadius = 10;
+        //-------- Kích thước EnviromentBox --------//
+        const BoxWidth = 155;
+        const BoxHeight = 200;
+        const cornerRadius = 10;
 
-//-------Tạo EnvironmentBox-------//
-    const EnvBox = new Rectangle(
-      EnvBox_X, EnvBox_Y,       // vị trí góc trên bên trái
-      BoxWidth, BoxHeight,  // kích thước
-      {
-        fill: 'white',
-        stroke: 'black',
-        lineWidth: 1,
-        cornerRadius: cornerRadius
-      }
-    );
-    this.addChild(EnvBox);
+        //-------Tạo EnvironmentBox-------//
+        const EnvBox = new Rectangle(
+            EnvBox_X, EnvBox_Y,
+            BoxWidth, BoxHeight,
+            {
+                fill: 'white',
+                stroke: 'black',
+                lineWidth: 1,
+                cornerRadius: cornerRadius
+            }
+        );
+        this.addChild(EnvBox);
 
-//-------Tạo tiêu đề hiển thị--------//
-    const titleEnv = new Text('ENVIRONMENT', {
-      font: new PhetFont({ size: 16, weight: 'bold' }),
-      fill: 'black'
-    });
-    titleEnv.left = EnvBox.left + 10;
-    titleEnv.top = EnvBox.top + 10;
-    this.addChild(titleEnv);
-//--------- Tạo danh sách môi trường---------//
-    const envOptions = [
-        {value: 'Earth' as const, 
-        createNode: () => new Text('Earth', {font: new PhetFont(12)}) },
-        {value: 'Mars' as const, 
-        createNode: () => new Text('Mars', {font: new PhetFont(12)}) },
-        {value: 'Moon' as const, 
-        createNode: () => new Text('Moon', {font: new PhetFont(12)})}
-    ]
-    const selectedEnvProperty = new Property<'Earth' | 'Mars' | 'Moon'>('Earth');
+        //-------Tạo tiêu đề hiển thị--------//
+        const titleEnv = new Text('ENVIRONMENT', {
+            font: new PhetFont({ size: 16, weight: 'bold' }),
+            fill: 'black'
+        });
+        titleEnv.left = EnvBox.left + 10;
+        titleEnv.top = EnvBox.top + 10;
+        this.addChild(titleEnv);
 
-    const comboEnv = new ComboBox(selectedEnvProperty, envOptions, EnvBox, {
-        listPosition: 'below',
-        xMargin: 5,
-        yMargin: 5
-    });
+        //--------- Tạo danh sách môi trường---------//
+        const envOptions = [
+            { value: 'Earth' as const, createNode: () => new Text('Earth', { font: new PhetFont(12) }) },
+            { value: 'Mars' as const, createNode: () => new Text('Mars', { font: new PhetFont(12) }) },
+            { value: 'Moon' as const, createNode: () => new Text('Moon', { font: new PhetFont(12) }) }
+        ];
 
-    comboEnv.left = EnvBox.left + 10;
-    comboEnv.top = EnvBox.top + 5;
-    this.addChild(comboEnv)
+        const selectedEnvProperty = new Property<'Earth' | 'Mars' | 'Moon'>('Earth');
+
+        const comboEnv = new ComboBox(selectedEnvProperty, envOptions, EnvBox, {
+            listPosition: 'below',
+            xMargin: 5,
+            yMargin: 5
+        });
+
+        comboEnv.left = EnvBox.left + 10;
+        comboEnv.top = EnvBox.top + 5;
+        this.addChild(comboEnv);
+
+        //--------- Lắng nghe sự kiện chọn môi trường ---------//
+        selectedEnvProperty.link((envName: 'Earth' | 'Mars' | 'Moon') => {
+            this.environment.setEnvironment(envName);
+            this.updateColorsCallback(envName); // ← Gọi về StemScreenView để đổi màu
+        });
+    }
 }
-}
+
+
