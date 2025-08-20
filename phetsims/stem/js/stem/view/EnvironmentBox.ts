@@ -8,6 +8,7 @@ import Node from '../../../../scenery/js/nodes/Node.js';
 import StemScreenView from './StemScreenView.js';
 import stem from '../../stem.js';
 import Environment from '../model/EnvironmentChange.js';
+import StemModel from '../model/StemModel.js';
 
 
 
@@ -15,11 +16,13 @@ export default class EnviromentBox extends Node {
 
     private environment: Environment;
     private updateColorsCallback: (env: 'Earth' | 'Mars' | 'Moon') => void;
+    private model: StemModel;
 
-    constructor(infoBoxA: Rectangle, environment: Environment, updateColorsCallback: (env: 'Earth' | 'Mars' | 'Moon') => void) {
+    constructor(infoBoxA: Rectangle, environment: Environment, updateColorsCallback: (env: 'Earth' | 'Mars' | 'Moon') => void, model: StemModel) {
         super();
         this.environment = environment;
         this.updateColorsCallback = updateColorsCallback;
+        this.model = model;
 
         //-------- Vị trí EnviromentBox --------//
         const EnvBox_X = infoBoxA.right + 10;
@@ -75,6 +78,12 @@ export default class EnviromentBox extends Node {
         selectedEnvProperty.link((envName: 'Earth' | 'Mars' | 'Moon') => {
             this.environment.setEnvironment(envName);
             this.updateColorsCallback(envName); // ← Gọi về StemScreenView để đổi màu
+            
+            //Đồng bộ gravity và airResistance vào StemModel
+            this.model.objectA.gravity = this.environment.gravity * 100;
+            this.model.objectB.gravity = this.environment.gravity * 100;
+            this.model.objectA.airResistanceCoefficient = this.environment.airResistance;
+            this.model.objectB.airResistanceCoefficient = this.environment.airResistance;
         });
     }
 }

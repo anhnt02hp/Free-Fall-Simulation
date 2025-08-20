@@ -203,22 +203,26 @@ export default class StemScreenView extends ScreenView {
     this.addChild(this.tText_A);
 
     //============ ENVIRONMENT BOX ============================
-    const envBox = new EnvironmentBox(infoBoxA, environment, (envName) => {
-      switch (envName) {
-        case 'Earth':
-          this.sky.fill = '#dbf3fa';
-          this.ground.fill = '#77dd77';
-          break;
-        case 'Mars':
-          this.sky.fill = '#ffe2e1';
-          this.ground.fill = '#ff9933';
-          break;
-        case 'Moon':
-          this.sky.fill = '#a9a9a9';
-          this.ground.fill = '#4f4f4f';
-          break;
-      }
-    });
+    const envBox = new EnvironmentBox(
+      infoBoxA, 
+      environment, 
+      (envName) => {
+        switch (envName) {
+          case 'Earth':
+            this.sky.fill = '#dbf3fa';
+            this.ground.fill = '#77dd77';
+            break;
+          case 'Mars':
+            this.sky.fill = '#ffe2e1';
+            this.ground.fill = '#ff9933';
+            break;
+          case 'Moon':
+            this.sky.fill = '#a9a9a9';
+            this.ground.fill = '#4f4f4f';
+            break;
+        }
+      }, this.model
+    );
     this.addChild(envBox);
 
     //==========INFORMATION BOX B=====================================
