@@ -9,6 +9,13 @@ import StemScreenView from './StemScreenView.js';
 import stem from '../../stem.js';
 import Environment from '../model/EnvironmentChange.js';
 import StemModel from '../model/StemModel.js';
+import NumberProperty from '../../../../axon/js/NumberProperty.js';
+import Range from '../../../../dot/js/Range.js';
+import Font from '../../../../scenery/js/util/Font.js';
+import TextField from './TextField.js';
+
+
+
 
 
 
@@ -85,7 +92,78 @@ export default class EnviromentBox extends Node {
             this.model.objectA.airResistanceCoefficient = this.environment.airResistance;
             this.model.objectB.airResistanceCoefficient = this.environment.airResistance;
         });
-    }
+
+        //---------Tạo hiển thị khối lượng--------//
+        const titleMass = new Text('m =', {
+        font: new PhetFont({ size: 16, weight: 'bold' }),
+        fill: 'black'
+        });
+        titleMass.right = titleEnv.left + 30;
+        titleMass.top = titleEnv.bottom + 15;
+        this.addChild(titleMass);
+
+
+        //---------Tạo ô nhập khối lượng (TextField) ---------//
+        const massProperty = new NumberProperty(1, { range: new Range(0.1, 1000) });
+        //-------Nhập giá trị------//
+        const massInput = new TextField({
+            width: 60,
+            height: 25,
+            fontSize: 16
+        });
+        //--------Danh sách item--------//
+        const unitProperty = new Property<'kg' | 'g'>( 'kg');
+
+        const unitItems = [
+            {value: 'kg' as const, 
+                createNode:() => new Text('kg', { font: new PhetFont( 16 ) })},
+            {value: 'g' as const, 
+                createNode:() => new Text('g', { font: new PhetFont( 16 ) })},
+        ];
+
+        const unitComboBox = new ComboBox(unitProperty, unitItems, EnvBox, {
+            xMargin: 5,
+            yMargin: 2
+        });
+
+        massInput.left = titleMass.right + 10;
+        massInput.top = titleMass.top;
+        unitComboBox.left = massInput.right + 5;
+        unitComboBox.top = massInput.top
+        this.addChild(massInput);
+        this.addChild(unitComboBox);
+
+        //------- Cập nhật đơn vị-------//
+        unitProperty.link(unit =>{
+            const valKg = massProperty.value;
+
+            if ( unit === 'kg') {
+                massInput.setValue( valKg.toFixed( 2 ));
+            }
+            else {
+                massInput.setValue((valKg * 1000).toFixed( 0 ));
+            }
+        });
+        
+        //-------Khi người dùng nhập số => cập nhật massProperty------//
+        window.addEventListener('keydown', () => {
+            const val = parseFloat(massInput.getValue());
+            if (!isNaN(val)) {
+                if (unitProperty.value === 'kg') {
+                    massProperty.value = val;
+                }
+                else {
+                    massProperty.value = val / 1000;
+                }
+
+        //---------Đồng bộ vào model---------//
+                this.model.objectA.mass = massProperty.value;
+                this.model.objectB.mass = massProperty.value;
+            }
+        });
+
+        
+}
 }
 
 
