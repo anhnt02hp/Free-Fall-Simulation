@@ -25,6 +25,11 @@ import Property from '../../../../axon/js/Property.js';
 import FreefallModeRadioButtonGroup, { FreefallMode } from './FreefallModeRadioButtonGroup.js';
 import EnvironmentBox from '../view/EnvironmentBox.js';
 import Environment from '../model/EnvironmentChange.js';
+import Toolbar, { ToolItem } from '../view/ToolBar.js';
+import Node from '../../../../scenery/js/nodes/Node.js';
+import Path from '../../../../scenery/js/nodes/Path.js';
+import Shape from '../../../../kite/js/Shape.js';
+
 
 type SelfOptions = {
  //TODO add options that are specific to StemScreenView here
@@ -60,6 +65,8 @@ export default class StemScreenView extends ScreenView {
   private vText_B!: Text;
   private vmaxText_B!: Text;
   private tText_B!: Text;
+
+  private simArea: Node;
 
 
   public constructor( model: StemModel, providedOptions: StemScreenViewOptions ) {
@@ -469,6 +476,51 @@ export default class StemScreenView extends ScreenView {
     } );
     this.addChild( resetAllButton );
     //=============================================================
+
+    //==============TOOL BAR=======================================
+    // Khu vực mô phỏng chính
+    this.simArea = new Node();
+    this.simArea.left = 150;
+    this.addChild(this.simArea);
+
+    // Danh sách tool cho Toolbar
+    const tools: ToolItem[] = [
+      { type: 'ball', shape: 'circle', color: 'red' },
+      { type: 'box', shape: 'square', color: 'blue' },
+      { type: 'triangle', shape: 'triangle', color: 'green' }
+    ];
+
+    // Tạo Toolbar
+    const toolbar = new Toolbar(tools, this);
+    toolbar.left = 20;
+    toolbar.top = 20;
+    this.addChild(toolbar);
+
+    // Xử lý khi thả tool vào vùng sim
+    toolbar.onDrop = (type: string, x: number, y: number) => {
+      let newNode: Node;
+
+      if (type === 'ball') {
+        newNode = new Circle(20, { fill: 'red' });
+      } else if (type === 'box') {
+        newNode = new Rectangle(0, 0, 40, 40, { fill: 'blue' });
+      } else {
+        const triangleShape = new Shape()
+          .moveTo(0, 40)
+          .lineTo(20, 0)
+          .lineTo(40, 40)
+          .close();
+
+        newNode = new Path(triangleShape, { fill: 'green', stroke: 'black' });
+      }
+
+      newNode.centerX = x;
+      newNode.centerY = y;
+
+      this.simArea.addChild(newNode);
+    };
+
+
   }
 
   /**
