@@ -480,7 +480,6 @@ export default class StemScreenView extends ScreenView {
     //==============TOOL BAR=======================================
     // Khu vực mô phỏng chính
     this.simArea = new Node();
-    this.simArea.left = 150;
     this.addChild(this.simArea);
 
     // Danh sách tool cho Toolbar
@@ -492,8 +491,8 @@ export default class StemScreenView extends ScreenView {
 
     // Tạo Toolbar
     const toolbar = new Toolbar(tools, this);
-    toolbar.left = 20;
-    toolbar.top = 20;
+    toolbar.right = this.layoutBounds.left; 
+    toolbar.top = envBox.bottom - 170;
     this.addChild(toolbar);
 
     // Xử lý khi thả tool vào vùng sim
